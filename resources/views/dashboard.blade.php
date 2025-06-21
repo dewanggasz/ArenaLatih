@@ -15,52 +15,10 @@
         </div>
     </x-slot>
 
+    {{-- PERUBAHAN BESAR DI SINI: x-data sekarang jauh lebih sederhana --}}
     <div x-data="{ 
             activeTab: 'latihan',
-            activeFilter: 'all', 
-            allTests: {{ Js::from($tests) }},
-            completedTestIds: {{ Js::from($completedTestIds) }},
-            progress: {},
-            currentUserId: {{ Auth::id() }},
-
-            init() {
-                this.progress = {}; 
-                this.allTests.forEach(test => {
-                    try {
-                        const savedTime = localStorage.getItem(`exam_time_user_${this.currentUserId}_${test.id}`);
-                        
-                        if (savedTime) {
-                            const timeValue = parseInt(savedTime, 10);
-                            if (!isNaN(timeValue) && timeValue > 0 && !this.isCompleted(test.id)) {
-                                this.progress[test.id] = { timeLeft: timeValue };
-                            }
-                        }
-                    } catch (e) {
-                        console.error(`Gagal memproses progres untuk tes ID: ${test.id}`, e);
-                    }
-                });
-            },
-
-            isCompleted(testId) {
-                return this.completedTestIds.includes(testId);
-            },
-
-            inProgress(testId) {
-                return this.progress.hasOwnProperty(testId);
-            },
-
-            get filteredTests() {
-                if (this.activeFilter === 'all') {
-                    return this.allTests;
-                }
-                return this.allTests.filter(test => test.sub_category && test.sub_category.category_id == this.activeFilter);
-            },
-
-            formatTime(seconds) {
-                const minutes = Math.floor(seconds / 60);
-                const remainingSeconds = seconds % 60;
-                return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
-            }
+            activeFilter: 'all'
          }" 
          class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -72,76 +30,85 @@
                 </div>
             @endif
 
+            {{-- Navigasi Tab --}}
             <div class="border-b border-gray-200 mb-8">
                 <nav class="flex" aria-label="Tabs">
-                    <button @click="activeTab = 'latihan'" :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'latihan', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'latihan' }" class="flex-1 whitespace-nowrap text-center py-4 px-1 border-b-2 font-medium text-sm sm:text-base transition-colors duration-200 focus:outline-none">
+                    <button @click="activeTab = 'latihan'" :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'latihan', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'latihan' }" class="flex-1 ...">
                         Paket Latihan
                     </button>
-                    <button @click="activeTab = 'history'" :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'history', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'history' }" class="flex-1 whitespace-nowrap text-center py-4 px-1 border-b-2 font-medium text-sm sm:text-base transition-colors duration-200 focus:outline-none">
+                    <button @click="activeTab = 'history'" :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'history', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'history' }" class="flex-1 ...">
                         Riwayat Latihan
                     </button>
                 </nav>
             </div>
 
             <div>
+                {{-- KONTEN TAB "PAKET LATIHAN" --}}
                 <div x-show="activeTab === 'latihan'" x-transition.opacity.duration.500ms>
                     
+                    {{-- Tombol Filter Kategori --}}
                     <div class="mb-6 flex items-center gap-2 overflow-x-auto pb-2">
-                        <button @click="activeFilter = 'all'" :class="{ 'bg-indigo-600 text-white': activeFilter === 'all', 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-300': activeFilter !== 'all' }" class="flex-shrink-0 px-4 py-2 text-sm font-semibold rounded-full shadow-sm transition-colors duration-200">
+                        <button @click="activeFilter = 'all'" :class="{ 'bg-indigo-600 text-white': activeFilter === 'all', 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-300': activeFilter !== 'all' }" class="flex-shrink-0 px-4 py-2 text-sm font-semibold rounded-full shadow-sm">
                             Semua
                         </button>
                         @foreach ($categories as $category)
-                            <button @click="activeFilter = {{ $category->id }}" :class="{ 'bg-indigo-600 text-white': activeFilter == {{ $category->id }}, 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-300': activeFilter != {{ $category->id }} }" class="flex-shrink-0 px-4 py-2 text-sm font-semibold rounded-full shadow-sm transition-colors duration-200">
+                            <button @click="activeFilter = {{ $category->id }}" :class="{ 'bg-indigo-600 text-white': activeFilter == {{ $category->id }}, 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-300': activeFilter != {{ $category->id }} }" class="flex-shrink-0 px-4 py-2 text-sm font-semibold rounded-full shadow-sm">
                                 {{ $category->name }}
                             </button>
                         @endforeach
                     </div>
 
+                    {{-- Daftar Latihan Sekarang Menggunakan Logika dari Server --}}
                     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                        <template x-for="test in filteredTests" :key="test.id">
-                            <div class="bg-white border border-slate-200 rounded-2xl shadow-lg shadow-slate-200/50 p-6 flex flex-col justify-between transition-all duration-300 hover:shadow-xl hover:-translate-y-1 h-full">
-                                <div>
-                                    <div class="flex justify-between items-start mb-3">
-                                        <h4 class="text-lg font-bold text-slate-800" x-text="test.title"></h4>
-                                        <span class="flex-shrink-0 text-xs font-bold px-2.5 py-1 rounded-full" 
-                                              :class="{
-                                                  'bg-green-100 text-green-800': isCompleted(test.id),
-                                                  'bg-amber-100 text-amber-800': inProgress(test.id),
-                                                  'bg-slate-100 text-slate-700': !isCompleted(test.id) && !inProgress(test.id)
-                                              }"
-                                              x-text="isCompleted(test.id) ? 'Selesai' : (inProgress(test.id) ? 'On Progress' : 'Belum Dimulai')">
-                                        </span>
-                                    </div>
-                                    <p class="text-sm text-slate-600 mb-5 line-clamp-2" x-text="test.description"></p>
-                                </div>
-                                <div class="mt-4 pt-4 border-t border-slate-200">
-                                    <div class="flex items-center justify-between text-sm text-slate-500 mb-4">
-                                        <div class="flex items-center gap-1.5" :class="{'text-red-600 font-bold': inProgress(test.id)}">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.414-1.414L11 10.586V6z" clip-rule="evenodd" /></svg>
-                                            <span x-text="inProgress(test.id) ? `Sisa Waktu: ${formatTime(progress[test.id].timeLeft)}` : `Durasi: ${test.duration_minutes} menit`"></span>
+                        @forelse ($tests as $test)
+                            @php
+                                $result = $userResults->firstWhere('test_id', $test->id);
+                                $status = 'Belum Dimulai';
+                                $buttonText = 'Mulai Kerjakan';
+                                $buttonLink = route('test.start', $test);
+                                $statusColor = 'bg-slate-100 text-slate-700';
+                                $buttonColor = 'bg-indigo-600 hover:bg-indigo-700';
+
+                                if ($result) {
+                                    if ($result->status === 'completed') {
+                                        $status = 'Selesai';
+                                        $buttonText = 'Lihat Pembahasan';
+                                        $buttonLink = route('test.show', $test);
+                                        $statusColor = 'bg-green-100 text-green-800';
+                                        $buttonColor = 'bg-blue-600 hover:bg-blue-700';
+                                    } elseif ($result->status === 'in_progress') {
+                                        $status = 'On Progress';
+                                        $buttonText = 'Lanjutkan Pengerjaan';
+                                        $buttonLink = route('test.show', $test);
+                                        $statusColor = 'bg-amber-100 text-amber-800';
+                                        $buttonColor = 'bg-amber-500 hover:bg-amber-600';
+                                    }
+                                }
+                            @endphp
+                            <div x-show="activeFilter === 'all' || ({{ $test->subCategory->category_id ?? 'null' }} == activeFilter)" x-transition.duration.300ms>
+                                <div class="bg-white border border-slate-200 rounded-2xl shadow-lg p-6 flex flex-col justify-between h-full">
+                                    <div>
+                                        <div class="flex justify-between items-start mb-3">
+                                            <h4 class="text-lg font-bold text-slate-800">{{ $test->title }}</h4>
+                                            <span class="flex-shrink-0 text-xs font-bold px-2.5 py-1 rounded-full {{ $statusColor }}">{{ $status }}</span>
                                         </div>
-                                        <div class="flex items-center gap-1.5">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z" /></svg>
-                                            <span class="font-medium" x-text="`${test.questions_count} Soal`"></span>
-                                        </div>
+                                        <p class="text-sm text-slate-600 mb-5 line-clamp-2">{{ $test->description }}</p>
                                     </div>
-                                    <a :href="isCompleted(test.id) ? `{{ url('/test') }}/${test.id}` : (inProgress(test.id) ? `{{ url('/test') }}/${test.id}` : `{{ url('/test') }}/${test.id}/start`)"
-                                       class="w-full inline-block text-center text-white font-bold py-2.5 px-4 rounded-lg transition duration-300 shadow-md hover:shadow-lg"
-                                       :class="{
-                                            'bg-blue-600 hover:bg-blue-700': isCompleted(test.id),
-                                            'bg-amber-500 hover:bg-amber-600': inProgress(test.id),
-                                            'bg-indigo-600 hover:bg-indigo-700': !isCompleted(test.id) && !inProgress(test.id)
-                                       }"
-                                       x-text="isCompleted(test.id) ? 'Lihat Pembahasan' : (inProgress(test.id) ? 'Lanjutkan Pengerjaan' : 'Mulai Kerjakan')">
-                                    </a>
+                                    <div class="mt-4 pt-4 border-t border-slate-200">
+                                        <div class="flex items-center justify-between text-sm text-slate-500 mb-4">
+                                            {{-- ... (info durasi dan jumlah soal) ... --}}
+                                        </div>
+                                        <a href="{{ $buttonLink }}" class="w-full inline-block text-center text-white font-bold py-2.5 px-4 rounded-lg transition {{ $buttonColor }} shadow-md hover:shadow-lg">
+                                            {{ $buttonText }}
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
-                        </template>
-                        <template x-if="filteredTests.length === 0">
+                        @empty
                             <div class="md:col-span-2 xl:col-span-3 text-center text-slate-500 py-10">
-                                <p>Tidak ada paket latihan yang tersedia untuk kategori ini.</p>
+                                <p>Tidak ada paket latihan yang tersedia.</p>
                             </div>
-                        </template>
+                        @endforelse
                     </div>
                 </div>
 

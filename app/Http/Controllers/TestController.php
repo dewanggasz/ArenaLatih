@@ -21,112 +21,138 @@ class TestController extends Controller
      */
     public function index()
     {
+        $user = Auth::user();
+        
+        // Ambil SEMUA hasil tes untuk memeriksa status di kartu latihan
+        $allUserResults = $user->testResults()->get();
+        
+        // PERBAIKAN: Ambil HANYA hasil yang sudah selesai untuk ditampilkan di Riwayat
+        $completedUserResults = $user->testResults()
+                                    ->where('status', 'completed')
+                                    ->with('test')
+                                    ->latest()
+                                    ->get();
+
         $tests = Test::with(['subCategory.category'])
-                     ->withCount('questions')
-                     ->latest()
-                     ->get();
-        $userResults = auth()->user()->testResults()->with('test')->latest()->get();
-        $completedTestIds = $userResults->pluck('test_id')->unique();
+                    ->withCount('questions')
+                    ->latest()
+                    ->get();
+        
         $categories = Category::whereHas('subCategories.tests')->get();
 
         return view('dashboard', [
             'tests' => $tests,
-            'userResults' => $userResults,
-            'completedTestIds' => $completedTestIds,
-            'categories' => $categories
+            'userResults' => $allUserResults, // Ini digunakan untuk menentukan status kartu
+            'completedResults' => $completedUserResults, // Ini khusus untuk tab riwayat
+            'categories' => $categories,
         ]);
     }
 
     /**
-     * Menampilkan halaman konfirmasi sebelum ujian dimulai.
+     * Memulai atau melanjutkan sebuah latihan.
      */
     public function start(Test $test)
     {
-        $test->load('questions');
-        $pgCount = $test->questions->where('type', 'pilihan_ganda')->count();
-        $essayCount = $test->questions->where('type', 'esai')->count();
-        $hasTaken = TestResult::where('user_id', Auth::id())
-                              ->where('test_id', $test->id)
-                              ->exists();
-        if ($hasTaken) {
-            return redirect()->route('test.show', $test);
-        }
-        return view('test.start', [
-            'test' => $test,
-            'pgCount' => $pgCount,
-            'essayCount' => $essayCount,
-        ]);
-    }
+        $user = Auth::user();
 
+        $existingResult = TestResult::where('user_id', $user->id)
+                                    ->where('test_id', $test->id)
+                                    ->first();
+
+        if ($existingResult && $existingResult->status === 'completed') {
+            return redirect()->route('test.show', $test->id);
+        }
+
+        if ($existingResult && $existingResult->status === 'in_progress') {
+            return redirect()->route('test.show', $test->id);
+        }
+
+        TestResult::create([
+            'user_id' => $user->id,
+            'test_id' => $test->id,
+            'status' => 'in_progress',
+            'started_at' => now(),
+            'questions_count' => $test->questions()->count(),
+            'score' => 0, // ⬅️ Tambahkan nilai default score
+            'correct_answers_count' => 0,
+        ]);
+
+        return redirect()->route('test.show', $test->id);
+    }
+    
     /**
      * Menampilkan halaman pengerjaan tes atau mode pembahasan.
      */
     public function show(Test $test)
     {
-        $testWithQuestions = Test::with('questions.choices')->find($test->id);
-        $previousResult = TestResult::where('user_id', Auth::id())
-                                    ->where('test_id', $test->id)
-                                    ->first();
-        if ($previousResult) {
-            $previousResult->load('answers.question');
-            $userAnswers = $previousResult->answers->pluck('choice_id', 'question_id')->filter();
-            $userEssayAnswers = $previousResult->answers->whereNotNull('essay_answer')->pluck('essay_answer', 'question_id');
-            $aiFeedbacks = $previousResult->answers->whereNotNull('ai_feedback')->pluck('ai_feedback', 'question_id');
-            $aiScores = $previousResult->answers->whereNotNull('ai_score')->pluck('ai_score', 'question_id');
+        $user = Auth::user();
+        $test->load('questions.choices');
+
+        $result = TestResult::where('user_id', $user->id)
+                            ->where('test_id', $test->id)
+                            ->firstOrFail(); 
+
+        if ($result->status === 'completed') {
+            $result->load('answers.question');
+            $userAnswers = $result->answers->pluck('choice_id', 'question_id')->filter();
+            $userEssayAnswers = $result->answers->whereNotNull('essay_answer')->pluck('essay_answer', 'question_id');
+            $aiFeedbacks = $result->answers->whereNotNull('ai_feedback')->pluck('ai_feedback', 'question_id');
+            $aiScores = $result->answers->whereNotNull('ai_score')->pluck('ai_score', 'question_id');
+
             return view('test.show', [
-                'test' => $testWithQuestions,
+                'test' => $test,
                 'isReviewMode' => true,
                 'userAnswers' => $userAnswers,
                 'userEssayAnswers' => $userEssayAnswers,
                 'aiFeedbacks' => $aiFeedbacks,
                 'aiScores' => $aiScores,
             ]);
-        } else {
-            return view('test.show', [
-                'test' => $testWithQuestions,
-                'isReviewMode' => false,
-                'userAnswers' => collect(),
-                'userEssayAnswers' => collect(),
-                'aiFeedbacks' => collect(),
-                'aiScores' => collect(),
-            ]);
         }
+
+        $elapsed = now()->diffInSeconds($result->started_at);
+        $totalDuration = $test->duration_minutes * 60;
+        $timeRemaining = $totalDuration - $elapsed;
+
+        return view('test.show', [
+            'test' => $test,
+            'isReviewMode' => false,
+            'timeRemaining' => $timeRemaining > 0 ? $timeRemaining : 0,
+        ]);
     }
 
     /**
-     * Menerima jawaban, mengevaluasi, dan menyimpan hasil.
+     * Menerima jawaban, mengevaluasi, dan menyelesaikan hasil.
      */
     public function submit(Request $request, Test $test)
     {
-        $test->load('questions');
-        $submittedAnswers = $request->input('answers', []);
         $user = Auth::user();
+        $testResult = TestResult::where('user_id', $user->id)
+                                ->where('test_id', $test->id)
+                                ->where('status', 'in_progress')
+                                ->firstOrFail();
 
-        $testResult = TestResult::create([
-            'user_id' => $user->id,
-            'test_id' => $test->id,
-            'score' => 0,
-            'questions_count' => $test->questions->count(),
-            'correct_answers_count' => 0,
-        ]);
-
+        $submittedAnswers = $request->input('answers', []);
         foreach ($submittedAnswers as $question_id => $answer) {
             if (!empty($answer)) {
-                TestAnswer::create([
-                    'test_result_id' => $testResult->id,
-                    'question_id' => $question_id,
-                    'choice_id' => is_numeric($answer) ? $answer : null,
-                    'essay_answer' => is_string($answer) && !is_numeric($answer) ? $answer : null,
-                ]);
+                TestAnswer::updateOrCreate(
+                    ['test_result_id' => $testResult->id, 'question_id' => $question_id],
+                    [
+                        'choice_id' => is_numeric($answer) ? $answer : null,
+                        'essay_answer' => is_string($answer) && !is_numeric($answer) ? $answer : null,
+                    ]
+                );
             }
         }
-
+        
         if ($test->result_type === 'numeric') {
             $this->evaluateNumericTest($test, $testResult);
         } elseif ($test->result_type === 'descriptive') {
             $this->evaluateDescriptiveTest($test, $testResult);
         }
-
+        
+        $testResult->status = 'completed';
+        $testResult->save();
+        
         $this->generateShareImage($testResult);
         return redirect()->route('test.result', ['testResult' => $testResult->id]);
     }

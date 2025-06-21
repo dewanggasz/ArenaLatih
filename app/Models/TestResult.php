@@ -22,6 +22,9 @@ class TestResult extends Model
         'correct_answers_count',
         'share_uuid', // <-- Tambahkan ini
         'share_image_path', // <-- Tambahkan ini
+        'status',           // <-- Tambahkan ini
+        'started_at',       // <-- Tambahkan ini
+        'time_remaining',   // <-- Tambahkan ini
     ];
 
     protected static function boot()
