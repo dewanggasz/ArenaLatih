@@ -300,7 +300,7 @@ class TestController extends Controller
      */
     public function result(TestResult $testResult)
     {
-        if ($testResult->user_id !== Auth::id()) { abort(403); }
+        if ((int) $testResult->user_id !== Auth::id()) { abort(404); }
         if (is_null($testResult->share_uuid)) { $testResult->share_uuid = Str::uuid(); $testResult->save(); }
         $testResult->load('test');
 

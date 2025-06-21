@@ -1,0 +1,1 @@
+[21-Jun-2025 12:19:55 UTC] PHP Fatal error:  DISEVAL - Use of eval is forbidden in /home/tamacode/ArenaLatih/vendor/psy/psysh/src/ExecutionLoopClosure.php(52) : eval()'d code on line 1
