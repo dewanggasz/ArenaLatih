@@ -2,54 +2,63 @@
 
 {{-- 
     Komponen ini menggunakan Alpine.js untuk mengelola statusnya.
-    1. x-data: Menginisialisasi komponen. 'showBanner' akan memeriksa localStorage.
-    2. acceptCookies(): Fungsi yang akan dipanggil saat tombol diklik.
-       Ini akan mengatur item 'cookie_consent' di localStorage dan menyembunyikan banner.
-    3. x-show: Banner hanya akan muncul jika 'showBanner' bernilai true.
-    4. x-transition: Menambahkan animasi fade-in-out yang halus.
 --}}
 <div x-data="{
         showBanner: localStorage.getItem('cookie_consent') !== 'true',
+        readyToShow: false, // State baru untuk mengontrol kemunculan setelah jeda
+        init() {
+            // Memberi jeda 2 detik (2000 milidetik) sebelum banner siap ditampilkan
+            setTimeout(() => { this.readyToShow = true; }, 2000);
+        },
         acceptCookies() {
             localStorage.setItem('cookie_consent', 'true');
             this.showBanner = false;
+        },
+        rejectCookies() {
+            // Hanya menyembunyikan banner untuk sesi ini, akan muncul lagi di kunjungan berikutnya
+            this.showBanner = false;
         }
     }"
-     x-show="showBanner"
+     x-init="init()"
+     x-show="showBanner && readyToShow"
      x-transition:enter="transition ease-out duration-300"
-     x-transition:enter-start="opacity-0 transform translate-y-4"
-     x-transition:enter-end="opacity-100 transform translate-y-0"
+     x-transition:enter-start="opacity-0"
+     x-transition:enter-end="opacity-100"
      x-transition:leave="transition ease-in duration-200"
-     x-transition:leave-start="opacity-100 transform translate-y-0"
-     x-transition:leave-end="opacity-0 transform translate-y-4"
-     class="fixed bottom-0 inset-x-0 pb-2 sm:pb-5 z-50"
+     x-transition:leave-start="opacity-100"
+     x-transition:leave-end="opacity-0"
+     class="fixed inset-0 z-50 flex items-end justify-center p-4 sm:items-center"
      x-cloak
 >
-    <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
-        <div class="p-4 rounded-lg bg-slate-800 shadow-lg sm:p-6">
-            <div class="flex items-center justify-between flex-wrap">
-                <div class="w-0 flex-1 flex items-center">
-                    <span class="flex p-2 rounded-lg bg-slate-600">
-                        <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                    </span>
-                    <p class="ml-3 font-medium text-white truncate">
-                        <span class="md:hidden"> Kami menggunakan cookie untuk pengalaman terbaik. </span>
-                        <span class="hidden md:inline"> Website ini menggunakan cookie untuk memastikan Anda mendapatkan pengalaman terbaik. </span>
-                    </p>
-                </div>
-                <div class="order-3 mt-2 flex-shrink-0 w-full sm:order-2 sm:mt-0 sm:w-auto">
-                    <button @click="acceptCookies()" class="flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-indigo-600 bg-white hover:bg-indigo-50">
-                        Saya Mengerti
-                    </button>
-                </div>
-                <div class="order-2 flex-shrink-0 sm:order-3 sm:ml-2">
-                    <a href="#" class="text-sm font-medium text-slate-300 hover:text-white underline">
-                        Kebijakan Privasi
-                    </a>
-                </div>
-            </div>
+    {{-- Latar Belakang Gelap dengan Efek Blur --}}
+    <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
+
+    {{-- Kartu Modal Notifikasi --}}
+    <div x-show="showBanner && readyToShow"
+         x-transition:enter="ease-out duration-300"
+         x-transition:enter-start="opacity-0 transform translate-y-4 sm:translate-y-0 sm:scale-95"
+         x-transition:enter-end="opacity-100 transform translate-y-0 sm:scale-100"
+         class="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl p-6 sm:p-8 text-center"
+    >
+        {{-- Ikon Cookie Besar --}}
+      
+
+        <h3 class="mt-5 text-2xl font-bold text-slate-900">Kami Menghargai Privasi Anda</h3>
+        <div class="mt-2 text-base text-slate-600">
+            <p>
+                Platform "ArenaLatih" menggunakan cookie untuk menyimpan progres latihan Anda dan memberikan pengalaman terbaik. Dengan melanjutkan, Anda menyetujui penggunaan cookie sesuai dengan <a href="{{ route('privacy.policy') }}" target="_blank" class="font-semibold text-indigo-600 hover:underline">kebijakan privasi</a> kami.
+            </p>
+        </div>
+        {{-- PERUBAHAN DI SINI: Styling tombol disempurnakan --}}
+        <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {{-- Tombol Tolak dibuat lebih subtle --}}
+            {{-- PERBAIKAN: Menambahkan 'items-center' untuk menengahkan teks secara vertikal --}}
+            <button @click="rejectCookies()" type="button" class="w-full inline-flex items-center justify-center rounded-lg px-6 py-3 text-base font-semibold text-slate-500 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 transition-colors">
+                Tolak
+            </button>
+            <button @click="acceptCookies()" type="button" class="w-full inline-flex justify-center rounded-lg border border-transparent bg-indigo-600 px-6 py-3 text-base font-semibold text-white shadow-lg shadow-indigo-500/30 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-transform hover:scale-105">
+                Saya Mengerti & Setuju
+            </button>
         </div>
     </div>
 </div>

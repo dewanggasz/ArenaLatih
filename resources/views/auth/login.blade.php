@@ -5,14 +5,10 @@
             background-color: #f1f5f9; /* slate-100 */
             background-image: radial-gradient(#e2e8f0 1px, transparent 1px); /* slate-200 */
             background-size: 20px 20px;
-            padding: 2rem 0;
-            height: max-content;
         }
     </style>
 
-    {{-- Card Form Login --}}
-    {{-- PERUBAHAN DI SINI: Menambahkan margin vertikal (my-8) untuk memberikan jarak --}}
-    <div class="w-full rounded-2xl shadow-2xl shadow-slate-300/50 my-8 sm:max-w-md">
+    <div class="w-full bg-white rounded-2xl shadow-2xl shadow-slate-300/50 my-8 sm:max-w-md">
         <div class="p-8 space-y-6 sm:p-10">
             <h1 class="text-2xl text-center font-bold leading-tight tracking-tight text-gray-900 md:text-3xl">
                 Masuk ke Akun Anda
@@ -20,14 +16,24 @@
 
             <!-- Session Status -->
             <x-auth-session-status class="mb-4" :status="session('status')" />
+            
+            {{-- PERUBAHAN DI SINI: MENAMBAHKAN NOTIFIKASI ERROR --}}
+            @if ($errors->any())
+                <div class="p-4 text-sm text-red-800 rounded-lg bg-red-100" role="alert">
+                    <div class="mt-2 text-sm">
+                       {{ __('Kombinasi email/username dan password tidak cocok.') }}
+                    </div>
+                </div>
+            @endif
+            {{-- AKHIR BAGIAN NOTIFIKASI ERROR --}}
 
             <form class="space-y-6" method="POST" action="{{ route('login') }}">
                 @csrf
 
-                <!-- Login (Email or Username) -->
+                <!-- Email atau Username -->
                 <div>
                     <label for="login" class="block mb-2 text-sm font-medium text-gray-900">Email atau Username</label>
-                    <input type="text" name="login" id="login" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full p-3" placeholder="nama@email.com atau username" required autofocus>
+                    <input type="text" name="login" id="login" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full p-3 transition duration-200" placeholder="Username atau email@anda.com" required="" :value="old('login')" autofocus>
                 </div>
 
                 <!-- Password -->
@@ -57,7 +63,6 @@
                 <!-- Tombol Masuk -->
                 <button type="submit" class="w-full text-white bg-indigo-600 hover:bg-indigo-700 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-bold rounded-lg text-base px-5 py-3 text-center transition duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-xl">Masuk</button>
                 
-                {{-- PERUBAHAN DI SINI: Menghapus tautan "Daftar" untuk desain yang lebih bersih --}}
             </form>
         </div>
     </div>
