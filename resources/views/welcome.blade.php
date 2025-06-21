@@ -537,7 +537,7 @@
             const mouse = { x: null, y: null, radius: 150 };
 
             class Metaball {
-                constructor(width, height) { this.width = width; this.height = height; this.x = Math.random() * width; this.y = Math.random() * height; this.vx = (Math.random() - 0.5) * 0.5; this.vy = (Math.random() - 0.5) * 0.5; this.r = Math.random() * 40 + 40; }
+                constructor(width, height) { this.width = width; this.height = height; this.x = Math.random() * width; this.y = Math.random() * height; this.vx = (Math.random() - 0.5) * 5; this.vy = (Math.random() - 0.5) * 5; this.r = Math.random() * 45 + 45; }
                 update() { this.x += this.vx; this.y += this.vy; if (this.x > this.width + this.r || this.x < -this.r) this.vx = -this.vx; if (this.y > this.height + this.r || this.y < -this.r) this.vy = -this.vy; }
                 draw() { liquidCtx.beginPath(); liquidCtx.arc(this.x, this.y, this.r, 0, 2 * Math.PI); liquidCtx.fillStyle = 'white'; liquidCtx.fill(); }
             }
@@ -554,10 +554,10 @@
                         let dxMouse = ball.x - mouse.x; let dyMouse = ball.y - mouse.y;
                         let distance = Math.sqrt(dxMouse * dxMouse + dyMouse * dyMouse);
                         if (distance < mouse.radius + ball.r) {
-                            if (mouse.x < ball.x && ball.x < liquidCanvas.width - ball.r) ball.x += 3;
-                            if (mouse.x > ball.x && ball.x > ball.r) ball.x -= 3;
-                            if (mouse.y < ball.y && ball.y < liquidCanvas.height - ball.r) ball.y += 3;
-                            if (mouse.y > ball.y && ball.y > ball.r) ball.y -= 3;
+                            if (mouse.x < ball.x && ball.x < liquidCanvas.width - ball.r) ball.x += 2;
+                            if (mouse.x > ball.x && ball.x > ball.r) ball.x -= 2;
+                            if (mouse.y < ball.y && ball.y < liquidCanvas.height - ball.r) ball.y += 2;
+                            if (mouse.y > ball.y && ball.y > ball.r) ball.y -= 2;
                         }
                     }
                     ball.update(); ball.draw(); 
