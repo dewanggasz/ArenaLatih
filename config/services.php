@@ -18,6 +18,10 @@ return [
         'api_key' => env('IMGBB_API_KEY'),
     ],
 
+    'apiflash' => [
+        'access_key' => env('APIFLASH_ACCESS_KEY'),
+    ],
+
     'postmark' => [
         'token' => env('POSTMARK_TOKEN'),
     ],

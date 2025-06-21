@@ -8,8 +8,8 @@
     {{-- Meta Tag Open Graph untuk cuplikan di media sosial --}}
     <meta property="og:title" content="Skor Latihan: {{ $result->test->title }}" />
     <meta property="og:description" content="{{ $result->user->name }} mendapatkan skor {{ $result->score }} di ArenaLatih! Lihat hasilnya." />
-    {{-- PERUBAHAN DI SINI: Mengaktifkan meta tag gambar dan menggunakan path yang benar --}}
-    <meta property="og:image" content="{{ Storage::url($result->share_image_path) }}" />
+    {{-- PERUBAHAN DI SINI: Menggunakan URL langsung dari database --}}
+    <meta property="og:image" content="{{ $result->share_image_path }}" />
     <meta property="og:url" content="{{ route('test.share', $result) }}" />
     <meta property="og:type" content="website" />
 

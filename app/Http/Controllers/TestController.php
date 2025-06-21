@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Gemini\Laravel\Facades\Gemini;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
-use Spatie\Browsershot\Browsershot;
+use Illuminate\Support\Facades\Http;
 
 class TestController extends Controller
 {
@@ -248,18 +248,51 @@ class TestController extends Controller
     }
 
     /**
-     * Membuat gambar kartu skor untuk dibagikan.
+     * Membuat gambar kartu skor untuk dibagikan menggunakan ApiFlash.
      */
     protected function generateShareImage(TestResult $testResult)
     {
-        $testResult->load('user', 'test');
-        $html = view('test.share-image-template', ['result' => $testResult])->render();
-        $imagePath = 'share-images/' . $testResult->share_uuid . '.png';
-        if (!Storage::disk('public')->exists('share-images')) {
-            Storage::disk('public')->makeDirectory('share-images');
+        // 1. Dapatkan URL publik dari halaman hasil yang ingin di-screenshot
+        $urlToScreenshot = route('test.share', $testResult);
+
+        // 2. Siapkan parameter untuk ApiFlash
+        $accessKey = config('services.apiflash.access_key');
+        if (!$accessKey) {
+            // Jika API key tidak ada, lewati proses ini untuk mencegah error.
+            return;
         }
-        Browsershot::html($html)->windowSize(600, 315)->save(Storage::path('public/' . $imagePath));
-        $testResult->update(['share_image_path' => $imagePath]);
+
+        try {
+            // 3. Panggil API ApiFlash untuk mengambil screenshot
+            $response = Http::timeout(30)->get('https://api.apiflash.com/v1/urltoimage', [
+                'access_key' => $accessKey,
+                'url' => $urlToScreenshot,
+                'format' => 'png',
+                'width' => 1200,    // Ukuran standar untuk Open Graph
+                'height' => 630,
+                'response_type' => 'binary' // Minta gambar sebagai data, bukan URL
+            ]);
+
+            // 4. Jika berhasil, simpan gambar ke storage lokal kita
+            if ($response->successful()) {
+                $imagePath = 'share-images/' . $testResult->share_uuid . '.png';
+                
+                // Buat folder jika belum ada
+                if (!Storage::disk('public')->exists('share-images')) {
+                    Storage::disk('public')->makeDirectory('share-images');
+                }
+
+                // Simpan konten gambar (body) ke file
+                Storage::disk('public')->put($imagePath, $response->body());
+
+                // Update path gambar di database
+                $testResult->update(['share_image_path' => $imagePath]);
+            }
+        } catch (\Exception $e) {
+            // Jika terjadi error saat memanggil API (misal: timeout),
+            // catat error tersebut dan lewati proses pembuatan gambar.
+            report($e);
+        }
     }
 
     /**
