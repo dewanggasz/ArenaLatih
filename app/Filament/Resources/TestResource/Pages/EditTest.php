@@ -42,4 +42,10 @@ class EditTest extends EditRecord
         // Kembalikan daftar manajer yang sudah difilter
         return $managers;
     }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
+
 }

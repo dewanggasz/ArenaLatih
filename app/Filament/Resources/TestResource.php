@@ -13,6 +13,10 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Get;
+use App\Models\SubCategory;
+use Illuminate\Database\Eloquent\Model;
+use Filament\Forms\Set; // <-- Tambahkan ini
+use Illuminate\Support\Collection; // <-- Tambahkan ini
 
 class TestResource extends Resource
 {
@@ -28,12 +32,32 @@ class TestResource extends Resource
             ->schema([
                 Forms\Components\Section::make('Informasi Dasar')
                     ->schema([
-                        Forms\Components\Select::make('sub_category_id')
-                            ->label('Kategori Latihan')
-                            ->relationship('subCategory', 'name', fn (Builder $query) => $query->with('category'))
-                            ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->category->name} > {$record->name}")
-                            ->searchable()
+                        // Field 1: Memilih Kategori Utama
+                        Forms\Components\Select::make('category_id')
+                            ->label('Kategori Utama')
+                            ->options(Category::all()->pluck('name', 'id'))
+                            ->live() // Membuat form reaktif terhadap perubahan field ini
+                            ->afterStateUpdated(fn (Set $set) => $set('sub_category_id', null)) // Reset sub-kategori jika ini berubah
+                            ->afterStateHydrated(function (Set $set, ?Model $record) {
+                                if ($record && $record->sub_category_id) {
+                                    $set('category_id', $record->subCategory->category_id);
+                                }
+                            })
+                            ->dehydrated(false) // Field ini tidak disimpan ke database
                             ->required(),
+
+                        // Field 2: Memilih Sub-Kategori (tergantung field 1)
+                        Forms\Components\Select::make('sub_category_id')
+                            ->label('Sub-Kategori Latihan')
+                            ->options(function (Get $get): Collection {
+                                $categoryId = $get('category_id');
+                                if (!$categoryId) {
+                                    return collect(); // Kosongkan jika Kategori Utama belum dipilih
+                                }
+                                return SubCategory::where('category_id', $categoryId)->pluck('name', 'id');
+                            })
+                            ->required()
+                            ->live(), // Diperlukan agar form lain bisa bereaksi
                         
                         Forms\Components\TextInput::make('title')
                             ->label('Judul Paket Latihan')
