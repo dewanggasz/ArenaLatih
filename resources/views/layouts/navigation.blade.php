@@ -20,9 +20,6 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('profile.edit')" :active="request()->routeIs('profile.edit')">
-                        {{ __('Profile') }}
-                    </x-nav-link>
                      <x-nav-link :href="route('chat.index')" :active="request()->routeIs('chat.index')">
                         {{ __('Diskusi') }}
                     </x-nav-link>
@@ -31,6 +28,9 @@
                     </x-nav-link>
                      <x-nav-link :href="route('suggestions.create')" :active="request()->routeIs('suggestions.create')">
                         {{ __('Saran & Masukan') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('profile.edit')" :active="request()->routeIs('profile.edit')">
+                        {{ __('Profile') }}
                     </x-nav-link>
                 </div>
             </div>
