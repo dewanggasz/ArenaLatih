@@ -8,7 +8,7 @@ use App\Http\Controllers\ChatController;
 use App\Http\Controllers\LeaderboardController;
 use App\Http\Controllers\SuggestionController;
 use App\Http\Controllers\PageController;
-
+use App\Http\Controllers\WebhookController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -22,6 +22,9 @@ Route::get('/sitemap.xml', [SitemapController::class, 'index']);
 
 Route::get('/dashboard', [TestController::class, 'index'])
     ->middleware(['auth', 'verified'])->name('dashboard');
+
+// RUTE BARU UNTUK MENERIMA WEBHOOK DARI SAWERIA
+Route::post('/hooks/saweria', [WebhookController::class, 'handleSaweria']);
 
 Route::get('/test/{test}', [TestController::class, 'show'])
     ->middleware(['auth', 'verified'])->name('test.show');

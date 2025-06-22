@@ -155,7 +155,7 @@
                     if (message.parent) {
                         parentHtml = `
                             <div class="border-l-2 ${isMe ? 'border-indigo-300' : 'border-slate-300'} pl-2 mb-2 text-xs max-w-32 sm:max-w-sm md:max-w-md overflow-hidden">
-                                <p class="font-bold text-slate-600 break-words">${message.parent.user.name}</p>
+                                <p class="font-bold text-slate-600 break-words text-white">${message.parent.user.name}</p>
                                 <p class="border-l-2 border-slate-300 pl-2 mb-2 text-xs max-w-full sm:max-w-md overflow-hidden">${message.parent.message}</p>
                             </div>`;
                     }
