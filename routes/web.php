@@ -30,7 +30,7 @@ Route::post('/test/{test}/submit', [TestController::class, 'submit'])
 Route::get('/result/{testResult}', [TestController::class, 'result'])
     ->middleware(['auth', 'verified'])->name('test.result');
 
-Route::get('/test/{test}/start', [TestController::class, 'start'])
+Route::get('/test/{test}/begin', [TestController::class, 'start'])
     ->middleware(['auth', 'verified'])->name('test.start');
 
 Route::get('/hasil/{testResult:share_uuid}', [TestController::class, 'shareableResult'])

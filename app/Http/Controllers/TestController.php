@@ -53,6 +53,7 @@ class TestController extends Controller
      */
     public function start(Test $test)
     {
+        // dd('Saya berhasil masuk ke fungsi START'); // <--- TAMBAHKAN INI
         $user = Auth::user();
 
         $existingResult = TestResult::where('user_id', $user->id)
@@ -66,7 +67,9 @@ class TestController extends Controller
         if ($existingResult && $existingResult->status === 'in_progress') {
             return redirect()->route('test.show', $test->id);
         }
-
+        // Hitung jumlah soal
+        $pgCount = $test->questions()->where('type', 'pg')->count();
+        $essayCount = $test->questions()->where('type', 'essay')->count();
         TestResult::create([
             'user_id' => $user->id,
             'test_id' => $test->id,
@@ -77,7 +80,13 @@ class TestController extends Controller
             'correct_answers_count' => 0,
         ]);
 
-        return redirect()->route('test.show', $test->id);
+        return view('test.start', [
+            'test' => $test,
+            'pgCount' => $pgCount,
+            'essayCount' => $essayCount,
+            'title' => "Konfirmasi Latihan: " . $test->title, // <-- Tambahkan ini
+            'description' => "Siap untuk memulai latihan {$test->title}? Baca petunjuk pengerjaan sebelum mulai.", // <-- Tambahkan ini
+        ]);
     }
     
     /**
@@ -346,7 +355,10 @@ class TestController extends Controller
                 'testResult' => $testResult,
                 'averageEssayScore' => $averageEssayScore,
                 'essayCount' => $essayCount,
+                'title' => "Hasil Latihan: {$testResult->test->title}", // <-- Tambahkan ini
+                'description' => "Lihat hasil skormu untuk latihan {$testResult->test->title} dan bandingkan dengan yang lain.", // <-- Tambahkan ini
             ]);
+
         }
     }
     

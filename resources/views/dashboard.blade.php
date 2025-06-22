@@ -15,10 +15,42 @@
         </div>
     </x-slot>
 
-    {{-- PERUBAHAN BESAR DI SINI: x-data sekarang jauh lebih sederhana --}}
     <div x-data="{ 
             activeTab: 'latihan',
-            activeFilter: 'all'
+            categoryFilter: 'all', 
+            statusFilter: 'all',
+            isCategoryOpen: false,
+            allTests: {{ Js::from($tests) }},
+            allCategories: {{ Js::from($categories) }},
+            userResults: {{ Js::from($userResults) }},
+
+            get activeCategoryName() {
+                if (this.categoryFilter === 'all') {
+                    return 'Semua Kategori';
+                }
+                const category = this.allCategories.find(c => c.id == this.categoryFilter);
+                return category ? category.name : 'Semua Kategori';
+            },
+
+            getTestStatus(testId) {
+                const result = this.userResults.find(r => r.test_id === testId);
+                if (!result) return 'not_started';
+                return result.status;
+            },
+
+            get filteredTests() {
+                return this.allTests.filter(test => {
+                    const categoryMatch = this.categoryFilter === 'all' || (test.sub_category && test.sub_category.category_id == this.categoryFilter);
+                    if (!categoryMatch) return false;
+
+                    const status = this.getTestStatus(test.id);
+                    if (this.statusFilter === 'all') return true;
+                    if (this.statusFilter === 'completed') return status === 'completed';
+                    if (this.statusFilter === 'not_started') return status !== 'completed';
+                    
+                    return false;
+                });
+            }
          }" 
          class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -33,100 +65,120 @@
             {{-- Navigasi Tab --}}
             <div class="border-b border-gray-200 mb-8">
                 <nav class="flex" aria-label="Tabs">
-                    <button @click="activeTab = 'latihan'" :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'latihan', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'latihan' }" class="flex-1 ...">
+                    <button @click="activeTab = 'latihan'" :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'latihan', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'latihan' }" class="flex-1 whitespace-nowrap text-center py-4 px-1 border-b-2 font-medium text-sm sm:text-base">
                         Paket Latihan
                     </button>
-                    <button @click="activeTab = 'history'" :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'history', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'history' }" class="flex-1 ...">
+                    <button @click="activeTab = 'history'" :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'history', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'history' }" class="flex-1 whitespace-nowrap text-center py-4 px-1 border-b-2 font-medium text-sm">
                         Riwayat Latihan
                     </button>
                 </nav>
             </div>
 
             <div>
-                {{-- KONTEN TAB "PAKET LATIHAN" --}}
                 <div x-show="activeTab === 'latihan'" x-transition.opacity.duration.500ms>
                     
-                    {{-- Tombol Filter Kategori --}}
-                    <div class="mb-6 flex items-center gap-2 overflow-x-auto pb-2">
-                        <button @click="activeFilter = 'all'" :class="{ 'bg-indigo-600 text-white': activeFilter === 'all', 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-300': activeFilter !== 'all' }" class="flex-shrink-0 px-4 py-2 text-sm font-semibold rounded-full shadow-sm">
-                            Semua
-                        </button>
-                        @foreach ($categories as $category)
-                            <button @click="activeFilter = {{ $category->id }}" :class="{ 'bg-indigo-600 text-white': activeFilter == {{ $category->id }}, 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-300': activeFilter != {{ $category->id }} }" class="flex-shrink-0 px-4 py-2 text-sm font-semibold rounded-full shadow-sm">
-                                {{ $category->name }}
-                            </button>
-                        @endforeach
-                    </div>
-
-                    {{-- Daftar Latihan Sekarang Menggunakan Logika dari Server --}}
-                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                        @forelse ($tests as $test)
-                            @php
-                                $result = $userResults->firstWhere('test_id', $test->id);
-                                $status = 'Belum Dimulai';
-                                $buttonText = 'Mulai Kerjakan';
-                                $buttonLink = route('test.start', $test);
-                                $statusColor = 'bg-slate-100 text-slate-700';
-                                $buttonColor = 'bg-indigo-600 hover:bg-indigo-700';
-
-                                if ($result) {
-                                    if ($result->status === 'completed') {
-                                        $status = 'Selesai';
-                                        $buttonText = 'Lihat Pembahasan';
-                                        $buttonLink = route('test.show', $test);
-                                        $statusColor = 'bg-green-100 text-green-800';
-                                        $buttonColor = 'bg-blue-600 hover:bg-blue-700';
-                                    } elseif ($result->status === 'in_progress') {
-                                        $status = 'On Progress';
-                                        $buttonText = 'Lanjutkan Pengerjaan';
-                                        $buttonLink = route('test.show', $test);
-                                        $statusColor = 'bg-amber-100 text-amber-800';
-                                        $buttonColor = 'bg-amber-500 hover:bg-amber-600';
-                                    }
-                                }
-                            @endphp
-                            <div x-show="activeFilter === 'all' || ({{ $test->subCategory->category_id ?? 'null' }} == activeFilter)" x-transition.duration.300ms>
-                                <div class="bg-white border border-slate-200 rounded-2xl shadow-lg p-6 flex flex-col justify-between h-full">
-                                    <div>
-                                        <div class="flex justify-between items-start mb-3">
-                                            <h4 class="text-lg font-bold text-slate-800">{{ $test->title }}</h4>
-                                            <span class="flex-shrink-0 text-xs font-bold px-2.5 py-1 rounded-full {{ $statusColor }}">{{ $status }}</span>
+                    {{-- UI FILTER DIDESAIN ULANG --}}
+                    <div class="mb-8 p-4 bg-slate-50 rounded-2xl border border-slate-200">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="category-filter-button" class="text-sm font-semibold text-slate-600 block mb-2">Kategori Latihan</label>
+                                <div class="relative" @click.away="isCategoryOpen = false">
+                                    <button @click="isCategoryOpen = !isCategoryOpen" id="category-filter-button" class="w-full flex items-center justify-between text-left bg-white border-2 border-slate-200 rounded-lg shadow-sm text-slate-700 font-semibold focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition duration-150 py-2.5 px-4">
+                                        <span x-text="activeCategoryName"></span>
+                                        <svg class="w-5 h-5 text-slate-400 ml-2 transition-transform duration-200" :class="{ 'rotate-180': isCategoryOpen }" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                                    </button>
+                                    <div x-show="isCategoryOpen" x-transition class="absolute z-10 mt-2 w-full rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5" x-cloak>
+                                        <div class="py-1">
+                                            <a href="#" @click.prevent="categoryFilter = 'all'; isCategoryOpen = false" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Semua Kategori</a>
+                                            @foreach ($categories as $category)
+                                                <a href="#" @click.prevent="categoryFilter = {{ $category->id }}; isCategoryOpen = false" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">{{ $category->name }}</a>
+                                            @endforeach
                                         </div>
-                                        <p class="text-sm text-slate-600 mb-5 line-clamp-2">{{ $test->description }}</p>
-                                    </div>
-                                    <div class="mt-4 pt-4 border-t border-slate-200">
-                                        <div class="flex items-center justify-between text-sm text-slate-500 mb-4">
-                                            {{-- ... (info durasi dan jumlah soal) ... --}}
-                                        </div>
-                                        <a href="{{ $buttonLink }}" class="w-full inline-block text-center text-white font-bold py-2.5 px-4 rounded-lg transition {{ $buttonColor }} shadow-md hover:shadow-lg">
-                                            {{ $buttonText }}
-                                        </a>
                                     </div>
                                 </div>
                             </div>
-                        @empty
-                            <div class="md:col-span-2 xl:col-span-3 text-center text-slate-500 py-10">
-                                <p>Tidak ada paket latihan yang tersedia.</p>
+                            <div>
+                                <label class="text-sm font-semibold text-slate-600 block mb-2">Status Pengerjaan</label>
+                                <div class="flex bg-slate-200 p-1 rounded-lg">
+                                    <button @click="statusFilter = 'all'" :class="{ 'bg-white shadow': statusFilter === 'all', 'text-slate-600': statusFilter !== 'all' }" class="flex-1 px-4 py-2 text-sm font-semibold rounded-md transition-colors duration-200">
+                                        Semua
+                                    </button>
+                                    <button @click="statusFilter = 'not_started'" :class="{ 'bg-white shadow': statusFilter === 'not_started', 'text-slate-600': statusFilter !== 'not_started' }" class="flex-1 px-4 py-2 text-sm font-semibold rounded-md transition-colors duration-200">
+                                        Belum Dikerjakan
+                                    </button>
+                                    <button @click="statusFilter = 'completed'" :class="{ 'bg-white shadow': statusFilter === 'completed', 'text-slate-600': statusFilter !== 'completed' }" class="flex-1 px-4 py-2 text-sm font-semibold rounded-md transition-colors duration-200">
+                                        Selesai
+                                    </button>
+                                </div>
                             </div>
-                        @endforelse
+                        </div>
+                    </div>
+                    
+                    {{-- Daftar Latihan dengan Desain Kartu Baru --}}
+                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 px-2">
+                        <template x-for="test in filteredTests" :key="test.id">
+                            <div class="bg-white border border-slate-200 rounded-2xl shadow-lg p-6 flex flex-col justify-between h-full transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+                                <div>
+                                    <div class="flex justify-between items-start mb-4">
+                                        <span x-text="test.sub_category ? test.sub_category.name : 'Umum'" class="bg-indigo-100 text-indigo-700 text-xs font-bold px-3 py-1 rounded-full"></span>
+                                        <span class="flex-shrink-0 text-xs font-bold px-2.5 py-1 rounded-full" 
+                                              :class="{
+                                                'bg-green-100 text-green-800': getTestStatus(test.id) === 'completed',
+                                                'bg-amber-100 text-amber-800': getTestStatus(test.id) === 'in_progress',
+                                                'bg-slate-100 text-slate-700': getTestStatus(test.id) === 'not_started'
+                                              }"
+                                              x-text="getTestStatus(test.id) === 'completed' ? 'Selesai' : (getTestStatus(test.id) === 'in_progress' ? 'On Progress' : 'Belum Dimulai')">
+                                        </span>
+                                    </div>
+                                    <h4 class="text-lg font-bold text-slate-800" x-text="test.title"></h4>
+                                    <p class="text-sm text-slate-600 mt-2 line-clamp-2" x-text="test.description"></p>
+                                </div>
+                                <div class="mt-6 pt-4 border-t border-slate-200">
+                                    <div class="flex items-center justify-between text-sm text-slate-500 mb-4">
+                                        <div class="flex items-center gap-1.5">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.414-1.414L11 10.586V6z" clip-rule="evenodd" /></svg>
+                                            <span x-text="`${test.duration_minutes} menit`"></span>
+                                        </div>
+                                        <div class="flex items-center gap-1.5">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z" /></svg>
+                                            <span class="font-medium" x-text="`${test.questions_count} Soal`"></span>
+                                        </div>
+                                    </div>
+                                    <a :href="getTestStatus(test.id) === 'not_started' ? `{{ url('/test') }}/${test.id}/start` : `{{ url('/test') }}/${test.id}`"
+                                       class="w-full inline-block text-center text-white font-bold py-2.5 px-4 rounded-lg transition shadow-md hover:shadow-lg"
+                                       :class="{
+                                            'bg-blue-600 hover:bg-blue-700': getTestStatus(test.id) === 'completed',
+                                            'bg-amber-500 hover:bg-amber-600': getTestStatus(test.id) === 'in_progress',
+                                            'bg-indigo-600 hover:bg-indigo-700': getTestStatus(test.id) === 'not_started'
+                                       }"
+                                       x-text="getTestStatus(test.id) === 'completed' ? 'Lihat Pembahasan' : (getTestStatus(test.id) === 'in_progress' ? 'Lanjutkan' : 'Mulai Kerjakan')">
+                                    </a>
+                                </div>
+                            </div>
+                        </template>
+                        <template x-if="filteredTests.length === 0">
+                            <div class="md:col-span-2 xl:col-span-3 text-center text-slate-500 py-10">
+                                <p>Tidak ada paket latihan yang sesuai dengan filter Anda.</p>
+                            </div>
+                        </template>
                     </div>
                 </div>
 
+                {{-- KONTEN UNTUK TAB "RIWAYAT LATIHAN" --}}
                 <div x-show="activeTab === 'history'" x-transition.opacity.duration.500ms>
                     <div class="bg-white overflow-hidden shadow-xl shadow-slate-200/50 rounded-2xl">
                         <div class="p-6 md:p-8">
-                            @if($userResults->isEmpty())
-                                <p class="text-center text-slate-500 py-10">Anda belum pernah mengerjakan latihan.</p>
+                            @if($completedResults->isEmpty())
+                                <p class="text-center text-slate-500 py-10">Anda belum pernah menyelesaikan latihan.</p>
                             @else
                                 <div class="space-y-4">
-                                    @foreach($userResults as $result)
+                                    @foreach($completedResults as $result)
                                         <div class="p-4 border border-slate-200 rounded-xl transition-shadow duration-300 hover:shadow-md">
                                             <div class="flex justify-between items-center">
                                                 <div>
                                                     <p class="font-bold text-slate-800">{{ $result->test->title }}</p>
                                                     <p class="text-xs text-slate-500 mt-0.5">{{ $result->created_at->format('d M Y, H:i') }}</p>
                                                 </div>
-                                                {{-- PERBAIKAN LOGIKA DI SINI --}}
                                                 <div class="text-right">
                                                     @if($result->test->result_type === 'numeric')
                                                         <p class="font-bold text-3xl text-indigo-600">{{ $result->score }}</p>

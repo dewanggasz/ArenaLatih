@@ -7,7 +7,9 @@
             background-size: 20px 20px;
         }
     </style>
-
+    <x-slot name="title">Masuk ke Akun Anda - ArenaLatih</x-slot>
+    <x-slot name="description">Masuk untuk melanjutkan latihan soal, melihat progres, dan berdiskusi di platform ArenaLatih.</x-slot>
+    
     <div class="w-full bg-white rounded-2xl shadow-2xl shadow-slate-300/50 my-8 sm:max-w-md">
         <div class="p-8 space-y-6 sm:p-10">
             <h1 class="text-2xl text-center font-bold leading-tight tracking-tight text-gray-900 md:text-3xl">

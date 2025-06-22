@@ -53,7 +53,7 @@
                     
                     <div id="new-message-indicator" class="absolute bottom-24 left-1/2 -translate-x-1/2 hidden cursor-pointer">
                         <button onclick="document.getElementById('chat-box').scrollTo({ top: document.getElementById('chat-box').scrollHeight, behavior: 'smooth' })" class="bg-indigo-600 text-white text-sm font-semibold px-4 py-2 rounded-full shadow-lg flex items-center gap-2 animate-bounce">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.707-10.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414l-3-3z" clip-rule="evenodd" /></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 rotate-180" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.707-10.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414l-3-3z" clip-rule="evenodd" /></svg>
                             <span id="new-message-text">Pesan Baru</span>
                         </button>
                     </div>
@@ -143,7 +143,7 @@
                     let messageContentHtml;
                     if (message.type === 'image') {
                         const imageUrl = `{{ asset('storage') }}/${message.message}`;
-                        messageContentHtml = `<a href="${imageUrl}" target="_blank"><img src="${imageUrl}" class="rounded-lg max-w-xs cursor-pointer" alt="Gambar yang dikirim"></a>`;
+                        messageContentHtml = `<a href="${imageUrl}" target="_blank"><img src="${imageUrl}" class="rounded-lg max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl max-w-full h-auto block" alt="Gambar yang dikirim"></a>`;
                     } else {
                         const p = document.createElement('p');
                         p.className = 'text-base break-words';
@@ -154,9 +154,9 @@
                     let parentHtml = '';
                     if (message.parent) {
                         parentHtml = `
-                            <div class="border-l-2 ${isMe ? 'border-indigo-300' : 'border-slate-300'} pl-2 mb-2 text-xs">
-                                <p class="font-bold">${message.parent.user.name}</p>
-                                <p class="italic opacity-80 truncate">${message.parent.message}</p>
+                            <div class="border-l-2 ${isMe ? 'border-indigo-300' : 'border-slate-300'} pl-2 mb-2 text-xs max-w-32 sm:max-w-sm md:max-w-md overflow-hidden">
+                                <p class="font-bold text-slate-600 break-words">${message.parent.user.name}</p>
+                                <p class="border-l-2 border-slate-300 pl-2 mb-2 text-xs max-w-full sm:max-w-md overflow-hidden">${message.parent.message}</p>
                             </div>`;
                     }
                     

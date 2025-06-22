@@ -3,11 +3,10 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
             <div class="flex">
-                <!-- Logo Kustom Baru -->
+                <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('dashboard') }}">
                         <div class="flex items-center gap-2">
-                            {{-- Logo Baru: Simbol abstrak untuk pertumbuhan/puncak --}}
                             <svg class="w-8 h-8 text-indigo-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M12 2L2 22h20L12 2zm0 4.55L17.52 20H6.48L12 6.55z"></path>
                             </svg>
@@ -21,17 +20,17 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('profile.edit')" :active="request()->routeIs('profile.edit')">
+                        {{ __('Profile') }}
+                    </x-nav-link>
                      <x-nav-link :href="route('chat.index')" :active="request()->routeIs('chat.index')">
                         {{ __('Diskusi') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('leaderboard.index')" :active="request()->routeIs('leaderboard.index')">
+                     <x-nav-link :href="route('leaderboard.index')" :active="request()->routeIs('leaderboard.index')">
                         {{ __('Peringkat') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('suggestions.create')" :active="request()->routeIs('suggestions.create')">
+                     <x-nav-link :href="route('suggestions.create')" :active="request()->routeIs('suggestions.create')">
                         {{ __('Saran & Masukan') }}
-                    </x-nav-link>
-                    <x-nav-link :href="route('profile.edit')" :active="request()->routeIs('profile.edit')">
-                        {{ __('Profile') }}
                     </x-nav-link>
                 </div>
             </div>
@@ -78,59 +77,55 @@
         </div>
     </div>
 
+    {{-- PERUBAHAN BESAR DI SINI: Desain Ulang Total Off-canvas Menu --}}
     <!-- Responsive Navigation Menu (Off-canvas) -->
-    <div 
-        x-show="open" 
-        x-transition:enter="transition ease-out duration-300"
-        x-transition:enter-start="opacity-0 transform -translate-x-full"
-        x-transition:enter-end="opacity-100 transform translate-x-0"
-        x-transition:leave="transition ease-in duration-200"
-        x-transition:leave-start="opacity-100 transform translate-x-0"
-        x-transition:leave-end="opacity-0 transform -translate-x-full"
-        class="sm:hidden fixed inset-0 z-40"
-        @click.away="open = false"
-        x-cloak
-    >
-        {{-- Latar belakang gelap --}}
-        <div class="fixed inset-0 bg-black/30 backdrop-blur-sm"></div>
+    <div x-show="open" class="sm:hidden fixed inset-0 z-40 flex" x-cloak>
+        <!-- Latar Belakang Overlay Gelap -->
+        <div @click="open = false" class="fixed inset-0 bg-black/40 backdrop-blur-sm"
+             x-transition:enter="ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="ease-in duration-200"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0">
+        </div>
 
-        {{-- Konten Menu --}}
-        <div class="relative w-4/5 max-w-xs h-full bg-white shadow-xl">
-            <div class="p-4">
-                 <!-- Logo di dalam menu mobile -->
-                <div class="shrink-0 flex items-center mb-6">
-                    <a href="{{ route('dashboard') }}" @click="open = false">
-                        <div class="flex items-center gap-2">
-                            {{-- Logo Baru: Simbol abstrak untuk pertumbuhan/puncak --}}
-                            <svg class="w-8 h-8 text-indigo-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M12 2L2 22h20L12 2zm0 4.55L17.52 20H6.48L12 6.55z"></path>
-                            </svg>
-                            <span class="font-bold text-xl text-gray-800 tracking-tight">ArenaLatih</span>
-                        </div>
-                    </a>
-                </div>
-                <!-- Menu Links -->
+        <!-- Panel Menu -->
+        <div class="relative w-4/5 max-w-xs h-full bg-white shadow-xl flex flex-col"
+             x-show="open"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="transform -translate-x-full"
+             x-transition:enter-end="transform translate-x-0"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="transform translate-x-0"
+             x-transition:leave-end="transform -translate-x-full">
+            
+            {{-- Header Menu dengan Logo dan Tombol Tutup --}}
+            <div class="flex items-center justify-between p-4 border-b">
+                <a href="{{ route('dashboard') }}" @click="open = false" class="flex items-center gap-2">
+                    <svg class="w-8 h-8 text-indigo-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 22h20L12 2zm0 4.55L17.52 20H6.48L12 6.55z"></path></svg>
+                    <span class="font-bold text-lg text-gray-800">ArenaLatih</span>
+                </a>
+                <button @click="open = false" class="p-2 -mr-2 text-gray-400 hover:text-gray-600">
+                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            {{-- Konten Menu yang Bisa di-scroll --}}
+            <div class="flex-grow overflow-y-auto">
                 <div class="pt-2 pb-3 space-y-1">
-                    <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" @click="open = false">
-                        {{ __('Dashboard') }}
-                    </x-responsive-nav-link>
-                    <x-responsive-nav-link :href="route('chat.index')" :active="request()->routeIs('chat.index')" @click="open = false">
-                        {{ __('Diskusi') }}
-                    </x-responsive-nav-link>
-                    <x-responsive-nav-link :href="route('leaderboard.index')" :active="request()->routeIs('leaderboard.index')">
-                        {{ __('Peringkat') }}
-                    </x-responsive-nav-link>
-                    <x-responsive-nav-link :href="route('suggestions.create')" :active="request()->routeIs('suggestions.create')">
-                        {{ __('Saran & Masukan') }}
-                    </x-responsive-nav-link>
-                     <x-responsive-nav-link :href="route('profile.edit')" :active="request()->routeIs('profile.edit')" @click="open = false">
-                        {{ __('Profile') }}
-                    </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" @click="open = false">{{ __('Dashboard') }}</x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('profile.edit')" :active="request()->routeIs('profile.edit')" @click="open = false">{{ __('Profile') }}</x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('chat.index')" :active="request()->routeIs('chat.index')" @click="open = false">{{ __('Diskusi') }}</x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('leaderboard.index')" :active="request()->routeIs('leaderboard.index')" @click="open = false">{{ __('Peringkat') }}</x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('suggestions.create')" :active="request()->routeIs('suggestions.create')" @click="open = false">{{ __('Saran & Masukan') }}</x-responsive-nav-link>
                 </div>
             </div>
 
-            <!-- User Info & Logout -->
-            <div class="absolute bottom-0 left-0 w-full p-4 border-t border-gray-200">
+            {{-- Footer Menu dengan Info Pengguna & Logout --}}
+            <div class="p-4 border-t border-gray-200">
                 <div class="flex items-center mb-3">
                      <div class="flex-shrink-0 w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-500">
                         {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
@@ -140,12 +135,9 @@
                         <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
                     </div>
                 </div>
-
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <x-responsive-nav-link :href="route('logout')"
-                            onclick="event.preventDefault();
-                                        this.closest('form').submit();" class="text-red-500 hover:bg-red-50">
+                    <x-responsive-nav-link :href="route('logout')" onclick="event.preventDefault(); this.closest('form').submit();" class="text-red-500 hover:bg-red-50">
                         {{ __('Log Out') }}
                     </x-responsive-nav-link>
                 </form>
