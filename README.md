@@ -1,5 +1,5 @@
 # ArenaLatih: Platform Latihan Soal Cerdas
-Selamat datang di **ArenaLatih**, sebuah platform web modern yang dirancang untuk menjadi pusat latihan soal yang fleksibel, interaktif, dan cerdas. Dibangun dengan Laravel dan Filament, platform ini tidak hanya berfungsi sebagai alat untuk mengerjakan ujian, tetapi juga sebagai partner belajar yang adaptif.
+Selamat datang di **ArenaLatih**, sebuah platform web modern yang dirancang untuk menjadi pusat latihan soal, asesmen, dan pengembangan diri yang fleksibel, interaktif, dan cerdas. Dibangun dengan Laravel dan Filament, platform ini tidak hanya berfungsi sebagai alat untuk mengerjakan ujian, etapi juga sebagai partner belajar yang adaptif dan komunitas yang hidup.
 
 Proyek ini merupakan hasil kolaborasi intensif yang menggabungkan visi desain yang kuat dengan implementasi teknis yang canggih, mencakup integrasi AI, sistem penilaian dinamis, dan pengalaman pengguna yang premium.
 
@@ -8,6 +8,10 @@ ArenaLatih dilengkapi dengan serangkaian fitur canggih yang membedakannya dari p
 
 ### Untuk Pengguna (Peserta Latihan)
 - Halaman Sambutan Interaktif: Pengalaman pertama yang memukau dengan animasi latar belakang cairan (metaballs), kursor neon kustom, dan efek coretan yang merespons gerakan mouse.
+
+- Notifikasi Cookie Profesional: Banner notifikasi cookie modal yang elegan, dengan jeda waktu, dan memberikan pilihan yang jelas kepada pengguna.
+
+- Halaman Error Kustom: Halaman error 404, 500, dan lainnya yang didesain secara unik dan informatif, meningkatkan pengalaman bahkan saat terjadi masalah.
 
 - Dashboard Modern Berbasis Tab: Antarmuka yang bersih untuk beralih antara "Paket Latihan" dan "Riwayat Latihan".
 
@@ -71,6 +75,14 @@ ArenaLatih dilengkapi dengan serangkaian fitur canggih yang membedakannya dari p
 
   - Halaman khusus untuk melihat dan mengelola semua saran yang masuk dari pengguna.
 
+- Dasbor Analitik:
+
+  - Kartu statistik utama (Total Pengguna, Latihan, dll.).
+
+  - Grafik pertumbuhan pengguna baru.
+
+  - Tabel paket latihan terpopuler.
+
 ### 🛠️ Teknologi yang Digunakan
 - Backend: Laravel 12, PHP 8.2
 
@@ -82,13 +94,16 @@ ArenaLatih dilengkapi dengan serangkaian fitur canggih yang membedakannya dari p
 
 - Animasi: GSAP (GreenSock Animation Platform) & Lottie
 
-- AI: Google Gemini API (google-gemini-php/laravel)
+- Layanan API:
+
+  - Google Gemini API: Digunakan untuk penilaian esai dan pembuatan pembahasan otomatis.
+
+  - ApiFlash: Digunakan untuk generate gambar kartu skor dari URL.
 
 - Pustaka Pendukung:
 
   - maatwebsite/excel (untuk impor/ekspor CSV & Excel)
 
-  - spatie/browsershot (untuk membuat gambar dari HTML)
 
 ### 🚀 Panduan Instalasi
 Berikut adalah langkah-langkah untuk menjalankan proyek ini di lingkungan lokal Anda.
@@ -115,9 +130,10 @@ Berikut adalah langkah-langkah untuk menjalankan proyek ini di lingkungan lokal 
 
 - Buka file ```.env``` dan atur koneksi database Anda (DB_DATABASE, DB_USERNAME, DB_PASSWORD).
 
-- Tambahkan API Key Anda dari Google AI Studio ke dalam ```.env.```
+- Tambahkan semua Kunci API yang diperlukan ke dalam ```.env.```
 
   ```GEMINI_API_KEY=KUNCI_API_GEMINI_ANDA```
+  ```APIFLASH_ACCESS_KEY=KUNCI_AKSES_APIFLASH_ANDA```
 
 **4. Jalankan Migrasi Database**
 
