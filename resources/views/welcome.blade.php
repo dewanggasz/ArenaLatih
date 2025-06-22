@@ -516,6 +516,32 @@
                     updateCursorState();
                 }
             });
+            window.addEventListener('touchstart', e => {
+            const touch = e.touches[0];
+            gsap.to(cursors, {
+                duration: 0.3,
+                opacity: 1,
+                scale: 1
+            });
+            moveCursor(touch.clientX, touch.clientY);
+            isClicking = true;
+            isHovering = e.target.matches('a, button, .scribble-target');
+            updateCursorState();
+        });
+        window.addEventListener('touchmove', e => {
+            const touch = e.touches[0];
+            moveCursor(touch.clientX, touch.clientY);
+        });
+        window.addEventListener('touchend', () => {
+            gsap.to(cursors, {
+                duration: 0.3,
+                opacity: 0,
+                scale: 0
+            });
+            isClicking = false;
+            isHovering = false;
+            updateCursorState();
+        });
             function updateCursorState() {
                 if (isClicking) {
                     gsap.to(cursorMain, { duration: 0.2, scale: 0.8 });
