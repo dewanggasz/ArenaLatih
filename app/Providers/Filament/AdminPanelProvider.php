@@ -17,6 +17,9 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use App\Filament\Admin\Widgets\StatsOverview;
+use App\Filament\Admin\Widgets\UserGrowthChart;
+use App\Filament\Admin\Widgets\PopularTestsWidget;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -44,8 +47,9 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
-                Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
+                StatsOverview::class,
+                UserGrowthChart::class,
+                PopularTestsWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
