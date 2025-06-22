@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TestController;
@@ -7,6 +8,7 @@ use App\Http\Controllers\ChatController;
 use App\Http\Controllers\LeaderboardController;
 use App\Http\Controllers\SuggestionController;
 use App\Http\Controllers\PageController;
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -16,7 +18,7 @@ Route::get('/', function () {
 //     return view('dashboard');
 // })->middleware(['auth', 'verified'])->name('dashboard');
 
-
+Route::get('/sitemap.xml', [SitemapController::class, 'index']);
 
 Route::get('/dashboard', [TestController::class, 'index'])
     ->middleware(['auth', 'verified'])->name('dashboard');
@@ -35,6 +37,7 @@ Route::get('/test/{test}/begin', [TestController::class, 'start'])
 
 Route::get('/hasil/{testResult:share_uuid}', [TestController::class, 'shareableResult'])
     ->name('test.share');
+
 
 
 
