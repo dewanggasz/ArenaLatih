@@ -215,4 +215,8 @@
             </div>
         </div>
     </div>
+    <div class="bg-yellow-200 text-black p-4 m-4 rounded">
+        <h3 class="font-bold">Data Debugging userResults:</h3>
+        <pre x-text="JSON.stringify(userResults, null, 2)"></pre>
+    </div>
 </x-app-layout>
