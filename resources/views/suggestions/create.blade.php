@@ -1,8 +1,8 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex items-center gap-4">
-            <div class=" bg-teal-100 rounded-lg">
-                <svg class="w-8 h-8 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <div class="p-2 bg-indigo-100 rounded-lg">
+                <svg class="w-6 h-6 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M12 18.375a6.002 6.002 0 004.243-1.757l3.256 3.256a.75.75 0 101.06-1.06l-3.256-3.256A6 6 0 1012 18.375zM12 15.75a3.75 3.75 0 100-7.5 3.75 3.75 0 000 7.5z" />
                   <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v.01" />
                 </svg>

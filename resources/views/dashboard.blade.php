@@ -40,15 +40,25 @@
 
             get filteredTests() {
                 return this.allTests.filter(test => {
+                    // Pertama, cek filter kategori
                     const categoryMatch = this.categoryFilter === 'all' || (test.sub_category && test.sub_category.category_id == this.categoryFilter);
-                    if (!categoryMatch) return false;
-
-                    const status = this.getTestStatus(test.id);
-                    if (this.statusFilter === 'all') return true;
-                    if (this.statusFilter === 'completed') return status === 'completed';
-                    if (this.statusFilter === 'not_started') return status !== 'completed';
                     
-                    return false;
+                    // Jika kategori tidak cocok, langsung sembunyikan
+                    if (!categoryMatch) {
+                        return false;
+                    }
+
+                    // Kedua, cek filter status
+                    const status = this.getTestStatus(test.id);
+
+                    // Jika filter 'semua', tampilkan
+                    if (this.statusFilter === 'all') {
+                        return true;
+                    }
+                    
+                    // Jika tidak, tampilkan HANYA jika status tes sama persis dengan filter yang dipilih
+                    // Ini akan menangani 'not_started', 'in_progress', dan 'completed' dengan benar.
+                    return status === this.statusFilter;
                 });
             }
          }" 
@@ -100,13 +110,16 @@
                             <div>
                                 <label class="text-sm font-semibold text-slate-600 block mb-2">Status Pengerjaan</label>
                                 <div class="flex bg-slate-200 p-1 rounded-lg">
-                                    <button @click="statusFilter = 'all'" :class="{ 'bg-white shadow': statusFilter === 'all', 'text-slate-600': statusFilter !== 'all' }" class="flex-1 px-4 py-2 text-sm font-semibold rounded-md transition-colors duration-200">
+                                    <button @click="statusFilter = 'all'" :class="{ 'bg-white shadow': statusFilter === 'all', 'text-slate-600': statusFilter !== 'all' }" class="flex-1 px-4 py-2 text-xs font-semibold rounded-md transition-colors duration-200">
                                         Semua
                                     </button>
-                                    <button @click="statusFilter = 'not_started'" :class="{ 'bg-white shadow': statusFilter === 'not_started', 'text-slate-600': statusFilter !== 'not_started' }" class="flex-1 px-4 py-2 text-sm font-semibold rounded-md transition-colors duration-200">
-                                        Belum Dikerjakan
+                                    <button @click="statusFilter = 'not_started'" :class="{ 'bg-white shadow': statusFilter === 'not_started', 'text-slate-600': statusFilter !== 'not_started' }" class="flex-1 px-4 py-2 text-xs font-semibold rounded-md transition-colors duration-200">
+                                        Baru
                                     </button>
-                                    <button @click="statusFilter = 'completed'" :class="{ 'bg-white shadow': statusFilter === 'completed', 'text-slate-600': statusFilter !== 'completed' }" class="flex-1 px-4 py-2 text-sm font-semibold rounded-md transition-colors duration-200">
+                                    <button @click="statusFilter = 'in_progress'" :class="{ 'bg-white shadow': statusFilter === 'in_progress', 'text-slate-600': statusFilter !== 'in_progress' }" class="flex-1 px-4 py-2 text-xs font-semibold rounded-md transition-colors duration-200">
+                                        Tertunda
+                                    </button>
+                                    <button @click="statusFilter = 'completed'" :class="{ 'bg-white shadow': statusFilter === 'completed', 'text-slate-600': statusFilter !== 'completed' }" class="flex-1 px-4 py-2 text-xs font-semibold rounded-md transition-colors duration-200">
                                         Selesai
                                     </button>
                                 </div>

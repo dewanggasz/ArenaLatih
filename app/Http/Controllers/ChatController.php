@@ -22,6 +22,20 @@ class ChatController extends Controller
         return view('chat.index', ['messages' => $messages]);
     }
 
+       public function destroy(ChatMessage $message)
+    {
+        // Otorisasi: Pastikan pengguna yang terautentikasi adalah pemilik pesan.
+        if ($message->user_id !== Auth::id()) {
+            return response()->json(['status' => 'Unauthorized'], 403);
+        }
+
+        // Hapus pesan
+        $message->delete();
+
+        // Beri respons sukses
+        return response()->json(['status' => 'Pesan berhasil dihapus!']);
+    }
+
     /**
      * Menyimpan pesan baru ke database, termasuk balasan.
      */
@@ -77,6 +91,23 @@ class ChatController extends Controller
             ->orderBy('created_at', 'asc')
             ->get();
         
-        return response()->json($newMessages);
+        // 2. [BARU] Periksa pesan yang telah dihapus
+        $deletedIds = [];
+        $visibleIds = $request->input('visible_ids', []);
+
+        if (!empty($visibleIds)) {
+            // Cari tahu ID mana dari yang terlihat di layar yang masih ada di database
+            $existingIds = ChatMessage::whereIn('id', $visibleIds)->pluck('id')->all();
+            
+            // Perbedaan antara yang dikirim frontend dan yang ada di DB adalah pesan yang dihapus
+            $deletedIds = array_diff($visibleIds, $existingIds);
+        }
+
+        // 3. [BARU] Kirim respons gabungan
+        return response()->json([
+            'new_messages' => $newMessages,
+            'deleted_ids' => array_values($deletedIds) // array_values untuk mereset key array
+        ]);
     }
+
 }

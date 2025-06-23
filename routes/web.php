@@ -41,9 +41,6 @@ Route::get('/test/{test}/begin', [TestController::class, 'start'])
 Route::get('/hasil/{testResult:share_uuid}', [TestController::class, 'shareableResult'])
     ->name('test.share');
 
-
-
-
 Route::middleware('auth')->group(function () {
     // ... (rute profile, chat, dll. biarkan saja)
 
@@ -55,7 +52,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/diskusi', [ChatController::class, 'index'])->name('chat.index');
 
 // Rute untuk mengirim (menyimpan) pesan baru
-Route::post('/diskusi', [ChatController::class, 'store'])->name('chat.store');
+Route::post('/diskusi', [ChatController::class, 'store'])
+    ->name('chat.store')
+    ->middleware(['auth', 'throttle:10,1']);
+
+Route::delete('/diskusi/{message}', [ChatController::class, 'destroy'])->name('chat.destroy');
 
 // Rute untuk mengambil pesan baru (untuk polling)
 Route::get('/diskusi/fetch', [ChatController::class, 'fetch'])->name('chat.fetch');

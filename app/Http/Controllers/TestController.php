@@ -51,56 +51,57 @@ class TestController extends Controller
     /**
      * Memulai atau melanjutkan sebuah latihan.
      */
+    
+    
+    /**
+     * Menampilkan halaman pengerjaan tes atau mode pembahasan.
+     */
     public function start(Test $test)
     {
-        // dd('Saya berhasil masuk ke fungsi START'); // <--- TAMBAHKAN INI
-        $user = Auth::user();
-
-        $existingResult = TestResult::where('user_id', $user->id)
-                                    ->where('test_id', $test->id)
-                                    ->first();
-
-        if ($existingResult && $existingResult->status === 'completed') {
-            return redirect()->route('test.show', $test->id);
-        }
-
-        if ($existingResult && $existingResult->status === 'in_progress') {
-            return redirect()->route('test.show', $test->id);
-        }
-        // Hitung jumlah soal
-        $pgCount = $test->questions()->where('type', 'pg')->count();
-        $essayCount = $test->questions()->where('type', 'essay')->count();
-        TestResult::create([
-            'user_id' => $user->id,
-            'test_id' => $test->id,
-            'status' => 'in_progress',
-            'started_at' => now(),
-            'questions_count' => $test->questions()->count(),
-            'score' => 0, // ⬅️ Tambahkan nilai default score
-            'correct_answers_count' => 0,
-        ]);
+        // Hitung jumlah soal untuk ditampilkan di halaman konfirmasi
+        $pgCount = $test->questions()->where('type', 'pilihan_ganda')->count();
+        $essayCount = $test->questions()->where('type', 'esai')->count();
+        
+        // PERUBAHAN KUNCI: Hapus blok TestResult::create() dari sini.
+        // Kita tidak membuat record apa pun sampai user benar-benar menekan "Mulai Sekarang".
 
         return view('test.start', [
             'test' => $test,
             'pgCount' => $pgCount,
             'essayCount' => $essayCount,
-            'title' => "Konfirmasi Latihan: " . $test->title, // <-- Tambahkan ini
-            'description' => "Siap untuk memulai latihan {$test->title}? Baca petunjuk pengerjaan sebelum mulai.", // <-- Tambahkan ini
+            'title' => "Konfirmasi Latihan: " . $test->title,
+            'description' => "Siap untuk memulai latihan {$test->title}? Baca petunjuk pengerjaan sebelum mulai.",
         ]);
     }
     
     /**
      * Menampilkan halaman pengerjaan tes atau mode pembahasan.
+     * Di sinilah progres tes dibuat jika belum ada.
      */
     public function show(Test $test)
     {
         $user = Auth::user();
         $test->load('questions.choices');
 
-        $result = TestResult::where('user_id', $user->id)
-                            ->where('test_id', $test->id)
-                            ->firstOrFail(); 
+        // PERUBAHAN KUNCI: Gunakan firstOrNew untuk menangani tes yang baru pertama kali dibuka.
+        // Ini akan mencari TestResult. Jika tidak ada, ia akan membuat instance baru di memori (belum disimpan).
+        $result = TestResult::firstOrNew(
+            ['user_id' => $user->id, 'test_id' => $test->id]
+        );
 
+        // Jika $result belum ada di database (artinya ini pertama kali user klik "Mulai Sekarang")
+        if (!$result->exists) {
+            $result->status = 'in_progress';
+            $result->started_at = now();
+            $result->questions_count = $test->questions()->count();
+            $result->score = 0;
+            $result->correct_answers_count = 0;
+            $result->share_uuid = Str::uuid(); // Buat UUID di awal
+            $result->save(); // Simpan record baru ke database
+        }
+
+        // Dari sini, logika berjalan seperti biasa.
+        // Jika statusnya completed, masuk ke mode pembahasan.
         if ($result->status === 'completed') {
             $result->load('answers.question');
             $userAnswers = $result->answers->pluck('choice_id', 'question_id')->filter();
@@ -118,6 +119,7 @@ class TestController extends Controller
             ]);
         }
 
+        // Jika statusnya in_progress, tampilkan halaman pengerjaan dengan timer.
         $elapsed = now()->diffInSeconds($result->started_at);
         $totalDuration = $test->duration_minutes * 60;
         $timeRemaining = $totalDuration - $elapsed;
