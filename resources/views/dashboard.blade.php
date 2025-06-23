@@ -33,7 +33,7 @@
             },
 
             getTestStatus(testId) {
-                const result = this.userResults.find(r => r.test_id === testId);
+                const result = this.userResults.find(r => r.test_id == testId);
                 if (!result) return 'not_started';
                 return result.status;
             },
