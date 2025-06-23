@@ -61,7 +61,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('chat.store');
 
     // Rute untuk menghapus pesan
-    Route::post('/diskusi/{message}/dilit', [ChatController::class, 'destroy'])->name('chat.destroy');
+    Route::post('/diskusi/{message}/delete', [ChatController::class, 'destroy'])->name('chat.destroy');
 });
 
 Route::get('/kebijakan-privasi', [PageController::class, 'privacyPolicy'])->name('privacy.policy');
