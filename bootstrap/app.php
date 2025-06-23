@@ -11,7 +11,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->verifyCsrfToken(except: [
+            'diskusi/*/delete', // URL yang dikecualikan dari CSRF
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
