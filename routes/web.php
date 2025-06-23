@@ -48,18 +48,21 @@ Route::middleware('auth')->group(function () {
     Route::get('/peringkat', [LeaderboardController::class, 'index'])->name('leaderboard.index');
 });
 
-// Rute untuk menampilkan halaman chat utama
+Route::middleware(['auth', 'verified'])->group(function () {
+    // Rute untuk menampilkan halaman chat utama
     Route::get('/diskusi', [ChatController::class, 'index'])->name('chat.index');
+    
+    // Rute untuk mengambil pesan baru (untuk polling)
+    Route::get('/diskusi/fetch', [ChatController::class, 'fetch'])->name('chat.fetch');
 
-// Rute untuk mengirim (menyimpan) pesan baru
-Route::post('/diskusi', [ChatController::class, 'store'])
-    ->name('chat.store')
-    ->middleware(['auth', 'throttle:10,1']);
+    // Rute untuk mengirim (menyimpan) pesan baru
+    Route::post('/diskusi', [ChatController::class, 'store'])
+        ->middleware('throttle:10,1') // Middleware auth sudah ada dari grup
+        ->name('chat.store');
 
-Route::delete('/diskusi/{message}', [ChatController::class, 'destroy'])->name('chat.destroy');
-
-// Rute untuk mengambil pesan baru (untuk polling)
-Route::get('/diskusi/fetch', [ChatController::class, 'fetch'])->name('chat.fetch');
+    // Rute untuk menghapus pesan
+    Route::delete('/diskusi/{message}', [ChatController::class, 'destroy'])->name('chat.destroy');
+});
 
 Route::get('/kebijakan-privasi', [PageController::class, 'privacyPolicy'])->name('privacy.policy');
 
