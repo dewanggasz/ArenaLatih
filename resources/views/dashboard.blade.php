@@ -144,7 +144,7 @@
                                             <span class="font-medium" x-text="`${test.questions_count} Soal`"></span>
                                         </div>
                                     </div>
-                                    <a :href="getTestStatus(test.id) === 'not_started' ? `{{ url('/test') }}/${test.id}/start` : `{{ url('/test') }}/${test.id}`"
+                                    <a :href="getTestStatus(test.id) === 'not_started' ? `{{ url('/test') }}/${test.id}/begin` : `{{ url('/test') }}/${test.id}`"
                                        class="w-full inline-block text-center text-white font-bold py-2.5 px-4 rounded-lg transition shadow-md hover:shadow-lg"
                                        :class="{
                                             'bg-blue-600 hover:bg-blue-700': getTestStatus(test.id) === 'completed',

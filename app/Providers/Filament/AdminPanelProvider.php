@@ -17,9 +17,9 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use App\Filament\Admin\Widgets\StatsOverview;
-use App\Filament\Admin\Widgets\UserGrowthChart;
-use App\Filament\Admin\Widgets\PopularTestsWidget;
+use App\Filament\Widgets\StatsOverview;
+use App\Filament\Widgets\UserGrowthChart;
+use App\Filament\Widgets\PopularTestsWidget;
 
 class AdminPanelProvider extends PanelProvider
 {

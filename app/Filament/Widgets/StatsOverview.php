@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Admin\Widgets; // Pastikan namespace-nya benar
+namespace App\Filament\Widgets; // Pastikan namespace-nya benar
 
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
