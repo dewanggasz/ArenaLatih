@@ -22,8 +22,9 @@ class ChatController extends Controller
         return view('chat.index', ['messages' => $messages]);
     }
 
-       public function destroy(ChatMessage $message)
+    public function destroy(ChatMessage $message)
     {
+        
         // Otorisasi: Pastikan pengguna yang terautentikasi adalah pemilik pesan.
         if ($message->user_id !== Auth::id()) {
             return response()->json(['status' => 'Unauthorized'], 403);

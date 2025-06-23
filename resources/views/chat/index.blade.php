@@ -85,7 +85,7 @@ Deskripsi: Halaman utama untuk fitur ruang diskusi (open chat).
                     {{-- Indikator pesan baru saat user tidak di bawah --}}
                     <div id="new-message-indicator" class="absolute bottom-24 left-1/2 -translate-x-1/2 hidden cursor-pointer">
                         <button onclick="document.getElementById('chat-box').scrollTo({ top: document.getElementById('chat-box').scrollHeight, behavior: 'smooth' })" class="bg-indigo-600 text-white text-sm font-semibold px-4 py-2 rounded-full shadow-lg flex items-center gap-2 animate-bounce">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L6.707 7.707a1 1 0 01-1.414 0z" clip-rule="evenodd" /></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 rotate-180" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L6.707 7.707a1 1 0 01-1.414 0z" clip-rule="evenodd" /></svg>
                             <span id="new-message-text">Pesan Baru</span>
                         </button>
                     </div>
@@ -242,9 +242,7 @@ Deskripsi: Halaman utama untuk fitur ruang diskusi (open chat).
                     
                     const buttonsHtml = `
                         <div class="absolute top-0 ${isMe ? 'left-0 -translate-x-full' : 'right-0 translate-x-full'} -translate-y-1/2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                            ${isMe ? `<button data-message-id="${message.id}" class="delete-button bg-white p-1.5 rounded-full shadow-md text-slate-500 hover:text-red-600 hover:bg-red-50">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
-                            </button>` : ''}
+                            
                             <button data-message-id="${message.id}" class="reply-button bg-white p-1.5 rounded-full shadow-md text-slate-500 hover:text-indigo-600 hover:bg-slate-100">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.707 3.293a1 1 0 010 1.414L5.414 7H11a7 7 0 017 7v2a1 1 0 11-2 0v-2a5 5 0 00-5-5H5.414l2.293 2.293a1 1 0 11-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
                             </button>
