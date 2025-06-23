@@ -21,7 +21,6 @@ class TestController extends Controller
      */
     public function index()
     {
-        dd('Versi Kode Baru Berjalan!');
         $user = Auth::user();
         
         // Ambil SEMUA hasil tes untuk memeriksa status di kartu latihan
