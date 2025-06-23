@@ -363,8 +363,8 @@ Deskripsi: Halaman utama untuk fitur ruang diskusi (open chat).
                 confirmButton.textContent = 'Menghapus...';
 
                 try {
-                    const response = await fetch(`/diskusi/${messageId}`, {
-                        method: 'DELETE',
+                    const response = await fetch(`/diskusi/${messageId}/delete`, { // Tambahkan /delete di akhir
+                        method: 'POST', // Ubah dari 'DELETE' menjadi 'POST'
                         headers: {
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                             'Accept': 'application/json',
