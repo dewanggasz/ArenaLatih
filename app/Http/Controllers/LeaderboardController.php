@@ -12,21 +12,30 @@ class LeaderboardController extends Controller
      */
     public function index()
     {
-        // --- PERUBAHAN DI SINI ---
         // 1. Ambil semua paket latihan yang:
-        //    a. Memiliki hasil ujian (whereHas 'results')
-        //    b. Ditandai untuk tampil di peringkat (where 'show_on_leaderboard' is true)
-        $tests = Test::where('show_on_leaderboard', true) // <-- KONDISI BARU DITAMBAHKAN
-                     ->whereHas('results')
+        //    a. Ditandai untuk tampil di peringkat.
+        //    b. Memiliki setidaknya satu hasil yang sudah SELESAI.
+        $tests = Test::where('show_on_leaderboard', true)
+                     ->whereHas('results', function ($query) {
+                         $query->where('status', 'completed'); // <-- KONDISI BARU YANG PENTING
+                     })
                      ->with(['results' => function ($query) {
-                         $query->orderBy('score', 'desc');
+                         // 2. Untuk setiap latihan, ambil HANYA hasil yang sudah SELESAI,
+                         //    lalu urutkan dari skor tertinggi.
+                         $query->where('status', 'completed')->orderBy('score', 'desc');
                      }])
                      ->get();
 
-        // 2. Olah data agar setiap pengguna hanya muncul sekali per latihan (dengan skor tertingginya).
+        // 3. Olah data agar setiap pengguna hanya muncul sekali per latihan (dengan skor tertingginya).
         $leaderboards = $tests->mapWithKeys(function ($test) {
+            // 'unique('user_id')' akan mengambil hasil pertama yang ditemui untuk setiap user.
+            // Karena kita sudah urutkan berdasarkan skor tertinggi, ini akan menjadi skor terbaik mereka.
             $uniqueUserResults = $test->results->unique('user_id');
+            
+            // Batasi hanya menampilkan 10 peringkat teratas untuk setiap tes
             $topTen = $uniqueUserResults->take(10);
+
+            // Kelompokkan hasilnya berdasarkan judul tes.
             return [$test->title => $topTen];
         });
 
