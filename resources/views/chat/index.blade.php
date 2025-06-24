@@ -122,7 +122,7 @@ Deskripsi: Halaman utama untuk fitur ruang diskusi (open chat).
                                 </button>
                                 <input type="file" id="image-upload-input" name="image" class="hidden" accept="image/png, image/jpeg, image/gif">
                                 <input type="text" id="message-input" name="message" class="flex-grow bg-slate-100 border-2 border-transparent rounded-xl shadow-inner focus:border-indigo-400 focus:ring-2 focus:ring-indigo-300 focus:ring-opacity-50 py-3 pl-12 pr-14 transition-colors duration-200" placeholder="Ketik pesan Anda..." autocomplete="off">
-                                <button type="submit" class="absolute right-1.5 flex-shrink-0 flex items-center justify-center w-10 h-10 text-white bg-indigo-600 hover:bg-indigo-700 rounded-full transition-all duration-200 transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-indigo-500 shadow-lg">
+                                <button type="submit" class="absolute right-1.5 flex-shrink-0 flex items-center justify-center w-10 h-10 text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition-all duration-200 transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-indigo-500 shadow-lg">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" /></svg>
                                 </button>
                             </div>

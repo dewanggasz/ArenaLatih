@@ -15,4 +15,10 @@ class PageController extends Controller
         // Kita akan membuat view 'pages.privacy-policy' di langkah berikutnya
         return view('pages.privacy-policy');
     }
+
+    public function pendingApproval()
+    {
+        // Cukup tampilkan view-nya
+        return view('pages.pending-approval');
+    }
 }

@@ -46,6 +46,9 @@ Route::middleware('auth')->group(function () {
 
     // --- RUTE BARU UNTUK PAPAN PERINGKAT ---
     Route::get('/peringkat', [LeaderboardController::class, 'index'])->name('leaderboard.index');
+
+    // Rute untuk halaman tunggu
+    Route::get('/menunggu-aktivasi', [PageController::class, 'pendingApproval'])->name('pending.approval');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {

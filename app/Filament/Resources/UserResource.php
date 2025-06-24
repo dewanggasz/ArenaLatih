@@ -32,7 +32,12 @@ class UserResource extends Resource
                 Forms\Components\TextInput::make('name')->label('Nama')->required()->maxLength(255),
                 Forms\Components\TextInput::make('username')->label('Username')->required()->alphaDash()->unique(ignoreRecord: true)->maxLength(255),
                 Forms\Components\TextInput::make('email')->email()->required()->maxLength(255)->unique(ignoreRecord: true),
-                Forms\Components\Select::make('role')->options(['admin' => 'Admin','user' => 'User',])->required()->default('user'),
+                Forms\Components\Select::make('role')
+                ->options([
+                    'admin' => 'Admin',
+                    'user' => 'User',
+                    'pre-register' => 'Pra-Registrasi',
+                    ])->required()->default('user'),
                 Forms\Components\TextInput::make('password')->label('Password Baru')->password()->required(fn (string $context): bool => $context === 'create')->rule(Password::defaults())->dehydrated(fn ($state) => filled($state))->dehydrateStateUsing(fn ($state) => Hash::make($state)),
                 Forms\Components\TextInput::make('password_confirmation')->label('Konfirmasi Password')->password()->required(fn (string $context): bool => $context === 'create')->same('password')->dehydrated(false)
             ]);
@@ -45,7 +50,7 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('name')->label('Nama')->searchable(),
                 Tables\Columns\TextColumn::make('username')->searchable(),
                 Tables\Columns\TextColumn::make('email')->searchable(),
-                Tables\Columns\TextColumn::make('role')->badge()->color(fn (string $state): string => match ($state) {'admin' => 'danger','user' => 'success',}),
+                Tables\Columns\TextColumn::make('role')->badge()->color(fn (string $state): string => match ($state) {'admin' => 'danger','user' => 'success','pre-register' => 'warning',}),
                 Tables\Columns\TextColumn::make('created_at')->label('Tanggal Daftar')->dateTime()->sortable(),
             ])
             ->filters([
