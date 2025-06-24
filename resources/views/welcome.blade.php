@@ -3,7 +3,10 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>ArenaLatih - Asah Kemampuan, Raih Kemajuan</title>
+    <x-seo 
+        title="ArenaLatih - Asah Kemampuan, Raih Kemajuan"
+        description="ArenaLatih adalah platform modern untuk mengasah kemampuan melalui latihan soal dari berbagai cabang ilmu."
+    />
     <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">

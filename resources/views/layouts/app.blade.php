@@ -5,7 +5,10 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <x-seo :title="$title ?? null" :description="$description ?? null" />
+        <x-seo 
+        title="ArenaLatih - Asah Kemampuan, Raih Kemajuan"
+        description="ArenaLatih adalah platform modern untuk mengasah kemampuan melalui latihan soal dari berbagai cabang ilmu."
+        />
         <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
 
         <!-- Fonts -->
