@@ -7,9 +7,8 @@
             background-size: 20px 20px;
         }
     </style>
-    <x-slot name="title">Masuk ke Akun Anda - ArenaLatih</x-slot>
-    <x-slot name="description">Masuk untuk melanjutkan latihan soal, melihat progres, dan berdiskusi di platform ArenaLatih.</x-slot>
-    
+
+    {{-- Card Form Login --}}
     <div class="w-full bg-white rounded-2xl shadow-2xl shadow-slate-300/50 my-8 sm:max-w-md">
         <div class="p-8 space-y-6 sm:p-10">
             <h1 class="text-2xl text-center font-bold leading-tight tracking-tight text-gray-900 md:text-3xl">
@@ -19,15 +18,20 @@
             <!-- Session Status -->
             <x-auth-session-status class="mb-4" :status="session('status')" />
             
-            {{-- PERUBAHAN DI SINI: MENAMBAHKAN NOTIFIKASI ERROR --}}
             @if ($errors->any())
                 <div class="p-4 text-sm text-red-800 rounded-lg bg-red-100" role="alert">
+                    <div class="flex items-center">
+                        <svg class="flex-shrink-0 inline w-4 h-4 mr-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+                        </svg>
+                        <span class="sr-only">Info</span>
+                        <h3 class="text-lg font-medium">Oops! Terjadi kesalahan.</h3>
+                    </div>
                     <div class="mt-2 text-sm">
                        {{ __('Kombinasi email/username dan password tidak cocok.') }}
                     </div>
                 </div>
             @endif
-            {{-- AKHIR BAGIAN NOTIFIKASI ERROR --}}
 
             <form class="space-y-6" method="POST" action="{{ route('login') }}">
                 @csrf
@@ -65,6 +69,10 @@
                 <!-- Tombol Masuk -->
                 <button type="submit" class="w-full text-white bg-indigo-600 hover:bg-indigo-700 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-bold rounded-lg text-base px-5 py-3 text-center transition duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-xl">Masuk</button>
                 
+                {{-- PERUBAHAN DI SINI: Menambahkan kembali tautan "Daftar" --}}
+                <p class="text-sm font-light text-center text-gray-500">
+                    Belum punya akun? <a href="{{ route('register') }}" class="font-medium text-indigo-600 hover:underline">Daftar di sini</a>
+                </p>
             </form>
         </div>
     </div>
