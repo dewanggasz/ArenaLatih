@@ -12,6 +12,10 @@ class UserGrowthChart extends ChartWidget
     
     protected static string $color = 'info';
 
+    protected static ?int $sort = 2; // Urutan 1 (paling atas)
+    // PERBAIKAN: Menghapus 'static' dari $columnSpan
+    protected int | string | array $columnSpan = 'full'; // Mengambil lebar penuh
+
     protected function getData(): array
     {
         // Ambil data pendaftaran pengguna selama 30 hari terakhir
