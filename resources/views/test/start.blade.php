@@ -24,7 +24,15 @@
                             </div>
                             <div class="flex justify-between items-center pl-4">
                                 <span class="text-sm text-slate-600">Pilihan Ganda:</span>
-                                <span class="text-sm font-medium">{{ $pgCount }} Soal</span>
+                                {{-- AWAL PERUBAHAN --}}
+                                <span class="text-sm font-medium text-right">
+                                    {{ $pgCount }} Soal
+                                    {{-- Tampilkan informasi ini hanya jika ada soal PG Kompleks --}}
+                                    @if($pgKompleksCount > 0)
+                                        <span class="block text-xs text-indigo-600 font-normal">(termasuk {{ $pgKompleksCount }} soal jawaban ganda)</span>
+                                    @endif
+                                </span>
+                                {{-- AKHIR PERUBAHAN --}}
                             </div>
                              <div class="flex justify-between items-center pl-4">
                                 <span class="text-sm text-slate-600">Esai:</span>
@@ -41,7 +49,7 @@
                         </div>
                         <div class="mt-8 text-center">
                             <p class="text-slate-700 font-semibold">Selamat Mengerjakan!</p>
-                             <p class="text-sm text-slate-500 mt-1">Pastikan koneksi internet Anda stabil. Progres Anda akan tersimpan otomatis.</p>
+                            <p class="text-sm text-slate-500 mt-1">Pastikan koneksi internet Anda stabil. Progres Anda akan tersimpan otomatis.</p>
                         </div>
                     @else
                         {{-- Tampilan untuk Tes Berbasis Kategori/Deskriptif (MBTI, Gaya Belajar, dll) --}}
@@ -53,13 +61,13 @@
                              <p class="font-semibold text-slate-700">Petunjuk Pengerjaan: {{ $test->subCategory->name ?? 'Tes Deskriptif' }}</p>
                              <p class="text-sm text-slate-600">Tidak ada jawaban benar atau salah dalam tes ini. Jawablah setiap pertanyaan dengan jujur sesuai dengan diri Anda yang sebenarnya untuk mendapatkan hasil yang paling akurat.</p>
                              <div class="pt-2 flex justify-between items-center text-sm text-slate-500">
-                                <span >Jumlah Pertanyaan: {{ $test->questions->count() }}</span>
-                                <span >Estimasi Waktu: {{ $test->duration_minutes }} menit</span>
+                                 <span >Jumlah Pertanyaan: {{ $test->questions->count() }}</span>
+                                 <span >Estimasi Waktu: {{ $test->duration_minutes }} menit</span>
                              </div>
                          </div>
                          <div class="mt-8 text-center">
-                            <p class="text-slate-700 font-semibold">Siap untuk Mengenal Diri Anda Lebih Dalam?</p>
-                        </div>
+                             <p class="text-slate-700 font-semibold">Siap untuk Mengenal Diri Anda Lebih Dalam?</p>
+                         </div>
                     @endif
                     
                     {{-- Tombol Aksi --}}

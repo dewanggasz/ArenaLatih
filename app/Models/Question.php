@@ -22,6 +22,7 @@ class Question extends Model
         'explanation',
         'type',
         'rubric',
+        'question_type',
     ];
 
     public function test(): BelongsTo

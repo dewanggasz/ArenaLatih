@@ -35,7 +35,17 @@ class QuestionsRelationManager extends RelationManager
                     ->default('pilihan_ganda')
                     ->required()
                     ->live(),
-
+                
+                Forms\Components\Select::make('question_type')
+                ->label('Jenis Pilihan Ganda')
+                ->options([
+                    'pilihan_ganda_biasa' => 'Jawaban Tunggal (Radio Button)',
+                    'pilihan_ganda_kompleks' => 'Jawaban Ganda (Checkbox)',
+                ])
+                ->default('pilihan_ganda_biasa')
+                ->required()
+                ->visible(fn (Get $get): bool => $get('type') === 'pilihan_ganda'),
+                
                 Forms\Components\RichEditor::make('question_text')
                     ->label('Isi Pertanyaan')
                     ->required()
