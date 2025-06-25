@@ -1,6 +1,9 @@
 {{-- Style Khusus untuk Overlay --}}
 {{-- Style Khusus untuk Overlay --}}
 {{-- PERPUSTAKAAN IKON FONT AWESOME --}}
+
+
+{{-- PERPUSTAKAAN IKON FONT AWESOME --}}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 {{-- Style Khusus untuk Overlay --}}
@@ -16,13 +19,13 @@
 {{-- Container utama overlay, memenuhi layar dan menengahkan modal --}}
 <div id="rules-overlay" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     
-    {{-- Modal itu sendiri, dengan tinggi maksimal dan layout flex-col --}}
-    <div id="rules-modal" class="bg-white w-full max-w-lg rounded-2xl shadow-2xl flex flex-col max-h-[90vh]">
+    {{-- Modal itu sendiri, dengan tinggi maksimal dan layout flex-col. Dibuat lebih lebar dengan max-w-4xl --}}
+    <div id="rules-modal" class="bg-white w-full max-w-4xl rounded-2xl shadow-2xl flex flex-col max-h-[90vh]">
         
         {{-- BAGIAN HEADER MODAL (Tidak bisa di-scroll) --}}
-        <div class="flex-shrink-0 p-6 md:p-8 border-b border-slate-200">
+        <div class="flex-shrink-0 p-6 md:p-8">
             <div class="text-center">
-                <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-indigo-100 mb-4">
+                <div class="mx-auto flex items-center justify-center h-10 w-10 rounded-full bg-indigo-100 mb-2">
                     {{-- GANTI SVG DENGAN IKON --}}
                     <i class="fa-solid fa-circle-info text-4xl text-indigo-600"></i>
                 </div>
@@ -32,52 +35,79 @@
         </div>
         
         {{-- BAGIAN KONTEN MODAL (Bisa di-scroll jika konten panjang) --}}
-        <div class="overflow-y-auto px-6 md:px-8 py-6">
-            <div class="space-y-4">
-                {{-- Aturan Pilihan Ganda Biasa --}}
-                <div class="rounded-lg bg-slate-50 p-4 text-center sm:flex sm:items-start sm:gap-4 sm:text-left">
-                    <div class="mx-auto mb-2 flex h-10 w-10 flex-shrink-0 items-center justify-center sm:h-6 sm:w-6 sm:mx-0 sm:mb-0">
-                        {{-- GANTI SVG DENGAN IKON --}}
-                        <i class="fa-solid fa-circle-dot text-2xl text-slate-500"></i>
+        <div class="overflow-y-auto px-6 md:px-8 py-6 border-t border-b border-slate-200">
+            {{-- Menggunakan layout grid untuk tampilan 2 kolom di layar medium ke atas --}}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                
+                {{-- Kolom Kiri: Jenis Soal --}}
+                <div class="space-y-5">
+                    <h4 class="font-bold text-lg text-slate-700 border-b pb-2 mb-4">Jenis Soal</h4>
+                    
+                    {{-- Aturan Pilihan Ganda Biasa --}}
+                    <div class="flex items-center gap-4">
+                        <div class="flex-shrink-0 text-slate-500 mt-1 w-6 text-center">
+                             <i class="fa-solid fa-circle-dot fa-lg"></i>
+                        </div>
+                        <div>
+                            <h5 class="font-semibold text-slate-800">Pilihan Ganda Tunggal</h5>
+                            <p class="mt-1 text-sm text-slate-600">Pilih <span class="font-bold">satu</span> jawaban yang paling tepat pada soal dengan pilihan berbentuk <span class="font-bold">bulat</span>.</p>
+                        </div>
                     </div>
-                    <div>
-                        <h4 class="font-semibold text-slate-800">Pilihan Ganda Tunggal</h4>
-                        <p class="mt-1 text-sm text-slate-600">Soal ini ditandai dengan pilihan berbentuk <span class="font-bold">bulat</span>. Anda hanya bisa memilih satu jawaban yang paling tepat.</p>
+
+                    {{-- Aturan Pilihan Ganda Kompleks (jika ada) --}}
+                    @if($pgKompleksCount > 0)
+                    <div class="flex items-center gap-4">
+                        <div class="flex-shrink-0 text-slate-500 mt-1 w-6 text-center">
+                            <i class="fa-solid fa-square-check fa-lg"></i>
+                        </div>
+                        <div>
+                            <h5 class="font-semibold text-slate-800">Pilihan Ganda Kompleks</h5>
+                            <p class="mt-1 text-sm text-slate-600">Pilih <span class="font-bold">semua</span> jawaban yang benar pada soal dengan pilihan berbentuk <span class="font-bold">kotak</span>.</p>
+                        </div>
                     </div>
+                    @endif
+
+                    {{-- Aturan Esai (jika ada) --}}
+                    @if($essayCount > 0)
+                    <div class="flex items-center gap-4">
+                        <div class="flex-shrink-0 text-slate-500 mt-1 w-6 text-center">
+                            <i class="fa-solid fa-pencil-alt fa-lg"></i>
+                        </div>
+                        <div>
+                            <h5 class="font-semibold text-slate-800">Soal Esai</h5>
+                            <p class="mt-1 text-sm text-slate-600">Jawablah pertanyaan pada kolom yang disediakan. Jawaban akan dinilai oleh sistem AI.</p>
+                        </div>
+                    </div>
+                    @endif
                 </div>
 
-                {{-- Aturan Pilihan Ganda Kompleks (jika ada) --}}
-                @if($pgKompleksCount > 0)
-                <div class="rounded-lg bg-slate-50 p-4 text-center sm:flex sm:items-start sm:gap-4 sm:text-left">
-                    <div class="mx-auto mb-2 flex h-10 w-10 flex-shrink-0 items-center justify-center sm:h-6 sm:w-6 sm:mx-0 sm:mb-0">
-                         {{-- GANTI SVG DENGAN IKON --}}
-                        <i class="fa-solid fa-square-check text-2xl text-slate-500"></i>
+                {{-- Kolom Kanan: Aturan Umum --}}
+                <div class="space-y-5">
+                     <h4 class="font-bold text-lg text-slate-700 border-b pb-2 mb-4">Aturan Umum</h4>
+                    <div class="flex items-center gap-4">
+                        <div class="flex-shrink-0 text-slate-500 mt-1 w-6 text-center">
+                            <i class="fa-solid fa-clock fa-lg"></i>
+                        </div>
+                        <div>
+                            <h5 class="font-semibold text-slate-800">Waktu Pengerjaan</h5>
+                            <p class="mt-1 text-sm text-slate-600">Waktu akan berjalan saat Anda menekan tombol 'Mulai'. Pastikan Anda menyelesaikan tes sebelum waktu habis.</p>
+                        </div>
                     </div>
-                    <div>
-                        <h4 class="font-semibold text-slate-800">Pilihan Ganda Kompleks</h4>
-                        <p class="mt-1 text-sm text-slate-600">Soal ini ditandai dengan pilihan berbentuk <span class="font-bold">kotak</span>. Anda bisa memilih lebih dari satu jawaban.</p>
-                    </div>
-                </div>
-                @endif
-
-                {{-- Aturan Esai (jika ada) --}}
-                @if($essayCount > 0)
-                <div class="rounded-lg bg-indigo-50 p-4 text-center sm:flex sm:items-start sm:gap-4 sm:text-left border border-indigo-200">
-                    <div class="mx-auto mb-2 flex h-10 w-10 flex-shrink-0 items-center justify-center sm:h-6 sm:w-6 sm:mx-0 sm:mb-0">
-                         {{-- GANTI SVG DENGAN IKON --}}
-                        <i class="fa-solid fa-pencil-alt text-2xl text-indigo-600"></i>
-                    </div>
-                    <div>
-                        <h4 class="font-semibold text-indigo-800">Soal Esai</h4>
-                        <p class="mt-1 text-sm text-indigo-700">Jawablah pertanyaan pada kolom yang disediakan. Jawaban Anda akan dinilai oleh sistem AI setelah tes selesai.</p>
+                     <div class="flex items-center gap-4">
+                        <div class="flex-shrink-0 text-slate-500 mt-1 w-6 text-center">
+                            <i class="fa-solid fa-arrows-rotate fa-lg"></i>
+                        </div>
+                        <div>
+                            <h5 class="font-semibold text-slate-800">Progres Tersimpan</h5>
+                            <p class="mt-1 text-sm text-slate-600">Progres pengerjaan Anda akan tersimpan otomatis di browser ini. Anda bisa melanjutkan nanti jika koneksi terputus.</p>
+                        </div>
                     </div>
                 </div>
-                @endif
             </div>
         </div>
-        
+
         {{-- BAGIAN FOOTER MODAL (Tidak bisa di-scroll) --}}
-        <div class="flex-shrink-0 mt-auto p-6 md:p-8 border-t border-slate-200">
+        <div class="flex-shrink-0 mt-auto p-6 md:px-8 md:py-6 bg-slate-50 rounded-b-2xl">
             <button id="start-test-button" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-indigo-300">
                 Saya Mengerti, Mulai Kerjakan
             </button>
