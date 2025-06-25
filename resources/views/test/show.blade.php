@@ -41,7 +41,7 @@
                         <i class="fa-solid fa-circle-dot text-2xl text-slate-500"></i>
                     </div>
                     <div>
-                        <h4 class="font-semibold text-slate-800">Soal Jawaban Tunggal</h4>
+                        <h4 class="font-semibold text-slate-800">Pilihan Ganda Tunggal</h4>
                         <p class="mt-1 text-sm text-slate-600">Soal ini ditandai dengan pilihan berbentuk <span class="font-bold">bulat</span>. Anda hanya bisa memilih satu jawaban yang paling tepat.</p>
                     </div>
                 </div>
@@ -54,7 +54,7 @@
                         <i class="fa-solid fa-square-check text-2xl text-slate-500"></i>
                     </div>
                     <div>
-                        <h4 class="font-semibold text-slate-800">Soal Jawaban Ganda</h4>
+                        <h4 class="font-semibold text-slate-800">Pilihan Ganda Kompleks</h4>
                         <p class="mt-1 text-sm text-slate-600">Soal ini ditandai dengan pilihan berbentuk <span class="font-bold">kotak</span>. Anda bisa memilih lebih dari satu jawaban.</p>
                     </div>
                 </div>
